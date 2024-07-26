@@ -128,7 +128,7 @@ public class ItemService : IItemService
         }
     }
 
-    public async Task<bool> PostAddedItem(AddedItemModel model)
+    public async Task<bool> PostAddedItem(addedItemModel model)
     {
         try
         {
@@ -148,7 +148,7 @@ public class ItemService : IItemService
         }
     }
 
-    public async Task<bool> PostItem(ItemModel model)
+    public async Task<bool> PostItem(itemModel model)
     {
         try
         {

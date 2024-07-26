@@ -6,9 +6,9 @@ using Newtonsoft.Json;
 
 public class SpawnObject : MonoBehaviour
 {
-    public List<AddedItemModel> addedItemsList = new List<AddedItemModel>();
-    public List<ItemModel> AllItems = new List<ItemModel>();
-    public List<OurTablesModel> ourTables = new List<OurTablesModel>();
+    public List<addedItemModel> AddedItemsList = new List<addedItemModel>();
+    public List<itemModel> AllItems = new List<itemModel>();
+    public List<tableDataModel> OurTables = new List<tableDataModel>();
 
 
     // for future
@@ -33,19 +33,19 @@ public class SpawnObject : MonoBehaviour
     {
         string AddedItemJson = await ItemService.GetAddedItem();
 
-        addedItemsList = JsonConvert.DeserializeObject<List<AddedItemModel>>(AddedItemJson);
+        AddedItemsList = JsonConvert.DeserializeObject<List<addedItemModel>>(AddedItemJson);
 
 
 
         string ItemJson = await ItemService.GetItem();
 
-        AllItems = JsonConvert.DeserializeObject<List<ItemModel>>(ItemJson);
+        AllItems = JsonConvert.DeserializeObject<List<itemModel>>(ItemJson);
 
 
 
         string OurTablseJson = await ItemService.GetOurTables();
 
-        ourTables = JsonConvert.DeserializeObject<List<OurTablesModel>>(OurTablseJson);
+        OurTables = JsonConvert.DeserializeObject<List<tableDataModel>>(OurTablseJson);
 
         Initializing();
 
@@ -58,7 +58,7 @@ public class SpawnObject : MonoBehaviour
     private void InitializingTable()
     {
         TableCreator tableCreator = MainCamera.GetComponent<TableCreator>();
-        foreach (OurTablesModel Tables in ourTables)
+        foreach (tableDataModel Tables in OurTables)
         {
             tableCreator.CreateTable(Tables.Width, Tables.Height, new Vector3((float)Tables.PosX, (float)Tables.PosY), Tables.Rotate);
         }

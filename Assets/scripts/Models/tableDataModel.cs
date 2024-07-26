@@ -1,4 +1,4 @@
-public class OurTablesModel
+public class tableDataModel
 {
     public int Id { get; set; }
 

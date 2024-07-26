@@ -11,9 +11,9 @@ public interface IItemService
 
     Task<string> GetOurTables();
 
-    Task<bool> PostItem(ItemModel model);
+    Task<bool> PostItem(itemModel model);
 
-    Task<bool> PostAddedItem(AddedItemModel model);
+    Task<bool> PostAddedItem(addedItemModel model);
 
     Task<bool> DeleteItem(int id);
 
