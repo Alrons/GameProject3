@@ -6,9 +6,9 @@ using Newtonsoft.Json;
 
 public class SpawnObject : MonoBehaviour
 {
-    public List<addedItemModel> AddedItemsList = new List<addedItemModel>();
-    public List<itemModel> AllItems = new List<itemModel>();
-    public List<tableDataModel> OurTables = new List<tableDataModel>();
+    public List<addedItemModel> addedItemsList = new List<addedItemModel>();
+    public List<itemModel> allItems = new List<itemModel>();
+    public List<tableDataModel> ourTables = new List<tableDataModel>();
 
 
     // for future
@@ -25,27 +25,27 @@ public class SpawnObject : MonoBehaviour
     //public UnityEngine.UI.Text XPower;
     //public GameObject MainCamera;
 
-    ItemService ItemService = new ItemService();
-    public GameObject MainCamera;
-
+    
+    public GameObject mainCamera;
 
     async void Start()
     {
+        ItemService ItemService = new ItemService();
         string AddedItemJson = await ItemService.GetAddedItem();
 
-        AddedItemsList = JsonConvert.DeserializeObject<List<addedItemModel>>(AddedItemJson);
+        addedItemsList = JsonConvert.DeserializeObject<List<addedItemModel>>(AddedItemJson);
 
 
 
         string ItemJson = await ItemService.GetItem();
 
-        AllItems = JsonConvert.DeserializeObject<List<itemModel>>(ItemJson);
+        allItems = JsonConvert.DeserializeObject<List<itemModel>>(ItemJson);
 
 
 
         string OurTablseJson = await ItemService.GetOurTables();
 
-        OurTables = JsonConvert.DeserializeObject<List<tableDataModel>>(OurTablseJson);
+        ourTables = JsonConvert.DeserializeObject<List<tableDataModel>>(OurTablseJson);
 
         Initializing();
 
@@ -57,10 +57,10 @@ public class SpawnObject : MonoBehaviour
 
     private void InitializingTable()
     {
-        TableCreator tableCreator = MainCamera.GetComponent<TableCreator>();
-        foreach (tableDataModel Tables in OurTables)
+        TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
+        foreach (tableDataModel Tables in ourTables)
         {
-            tableCreator.CreateTable(Tables.Width, Tables.Height, new Vector3((float)Tables.PosX, (float)Tables.PosY), Tables.Rotate);
+            tableCreator.CreateTable(Tables.width, Tables.height, new Vector3((float)Tables.posX, (float)Tables.posY), Tables.rotate);
         }
 
     }
