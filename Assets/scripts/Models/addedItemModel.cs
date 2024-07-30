@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class addedItemModel
+public class AddedItemModel
 {
     public int id;
     public int userId;
@@ -16,7 +16,7 @@ public class addedItemModel
     public int power;
     public int xPower;
 
-    public addedItemModel(int id, int userId, string title, string description, int price, int currency, string image, int place, int health, int power, int xPower)
+    public AddedItemModel(int id, int userId, string title, string description, int price, int currency, string image, int place, int health, int power, int xPower)
     {
         this.id = id;
         this.userId = userId;

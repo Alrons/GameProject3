@@ -1,14 +1,14 @@
-public class tableDataModel
+public class TableDataModel
 {
-    public int id { get; set; }
+    public int Id { get; set; }
 
-    public int height { get; set; }
+    public int Height { get; set; }
 
-    public int width { get; set; }
+    public int Width { get; set; }
 
-    public double posX { get; set; }
+    public double PosX { get; set; }
 
-    public double posY { get; set; }
+    public double PosY { get; set; }
 
-    public double rotate { get; set; }
+    public double Rotate { get; set; }
 }

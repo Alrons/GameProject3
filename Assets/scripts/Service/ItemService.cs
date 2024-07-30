@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class ItemService : IItemService
 {
-    private itemServiceProperties itemServiseProperties = new itemServiceProperties();
+    private ItemServiceProperties itemServiseProperties = new ItemServiceProperties();
     public async Task<bool> DeleteAddedItem(int id)
     {
         try
@@ -128,7 +128,7 @@ public class ItemService : IItemService
         }
     }
 
-    public async Task<bool> PostAddedItem(addedItemModel model)
+    public async Task<bool> PostAddedItem(AddedItemModel model)
     {
         try
         {
@@ -148,7 +148,7 @@ public class ItemService : IItemService
         }
     }
 
-    public async Task<bool> PostItem(itemModel model)
+    public async Task<bool> PostItem(ItemModel model)
     {
         try
         {

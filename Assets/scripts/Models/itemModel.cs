@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class itemModel
+public class ItemModel
 {
 
     public int id;
@@ -19,7 +19,7 @@ public class itemModel
     // temporarily not working feature
     public int xPover;
 
-    public itemModel(int Id, string Title, string Description, int Price, int Ñurrency, string Image, int Place, int Health, int Power, int XPover)
+    public ItemModel(int Id, string Title, string Description, int Price, int Ñurrency, string Image, int Place, int Health, int Power, int XPover)
     {
 
         this.id = Id;
