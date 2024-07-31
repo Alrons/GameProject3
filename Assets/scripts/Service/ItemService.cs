@@ -17,7 +17,7 @@ public class ItemService : IItemService
             // Use the BaseUrl constant
             for (int i = 0; i < 2; i++)
             {
-                response = await itemServiseProperties._httpClient.DeleteAsync($"{itemServiseProperties.BaseUrl}{itemServiseProperties._AddedItemsUrl}{id}");
+                response = await itemServiseProperties._httpClient.DeleteAsync($"{itemServiseProperties.baseUrl}{itemServiseProperties._AddedItemsUrl}{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     break;
@@ -41,7 +41,7 @@ public class ItemService : IItemService
             // Use the BaseUrl constant
             for (int i = 0; i < 2; i++)
             {
-                response = await itemServiseProperties._httpClient.DeleteAsync($"{itemServiseProperties.BaseUrl}{itemServiseProperties._Items}{id}");
+                response = await itemServiseProperties._httpClient.DeleteAsync($"{itemServiseProperties.baseUrl}{itemServiseProperties._Items}{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     break;
