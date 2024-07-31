@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using UnityEngine;
 
-public class itemServiceProperties
+public class ItemServiceProperties
 {
     // Use a constant for the base URL
     public readonly string BaseUrl = "https://localhost:7139/api/";
@@ -21,7 +21,7 @@ public class itemServiceProperties
 
     public string _OurTables { get; set; }
 
-    public itemServiceProperties()
+    public ItemServiceProperties()
     {
         // Initialize the HTTP client
         _httpClient = new HttpClient { BaseAddress = new Uri(BaseUrl) };
