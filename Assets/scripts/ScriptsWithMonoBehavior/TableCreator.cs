@@ -34,7 +34,7 @@ public class TableCreator : MonoBehaviour
             {
                 // copy of the cell
                 GameObject cellBackground = CopyPref(cellContentTransform.gameObject);
-
+                ourCell.RemoveAll(item => item == null);
                 // save our cell
                 ourCell.Add(cellBackground);
 
