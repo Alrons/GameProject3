@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,14 +28,14 @@ public class TableCreator : MonoBehaviour
 
         for (int i = 0; i < height; i++)
         {
-            // for the future
-            //int startNumberCell = ourCell.Count;
+            ourCell.RemoveAll(item => item == null);
+            int startNumberCell = ourCell.Count;
 
             for (int j = 0; j < width; j++)
             {
                 // copy of the cell
                 GameObject cellBackground = CopyPref(cellContentTransform.gameObject);
-                ourCell.RemoveAll(item => item == null);
+                
                 // save our cell
                 ourCell.Add(cellBackground);
 
@@ -49,14 +50,11 @@ public class TableCreator : MonoBehaviour
                     Text lineText = Instantiate(ourLinePower);
                     lineText.transform.SetParent(gameObject.transform);
                     lineText.transform.position = gameObject.transform.position + new Vector3((j + 1) * (100 + cellSpacing), -i * (30 + cellSpacing), 0);
-                    
-                    
-                    // for the future
 
-                    //PowerForLine powerForLine = lineText.GetComponent<PowerForLine>();
-                    //powerForLine.StartNumberCell = startNumberCell;
-                    //powerForLine.EndNumberCell = startNumberCell + width;
-                    //textsLinePower.Add(lineText);
+                    PowerForLine powerForLine = lineText.GetComponent<PowerForLine>();
+                    powerForLine.StartNumberCell = startNumberCell;
+                    powerForLine.EndNumberCell = startNumberCell + width;
+                    textsLinePower.Add(lineText);
                 }
             }
 

@@ -358,7 +358,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7247643895292567579, guid: 032a72cfc45569047a538913e5ea1311, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -484.99994
+      value: -484.99997
       objectReference: {fileID: 0}
     - target: {fileID: 7247643895292567579, guid: 032a72cfc45569047a538913e5ea1311, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1480,7 +1480,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -253.99994, y: -806}
+  m_AnchoredPosition: {x: -254, y: -806}
   m_SizeDelta: {x: 186.94, y: 32.71}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1007147158
@@ -1492,9 +1492,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1007147154}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4663fde9a0ab9304f96eda6c1328255a, type: 3}
+  m_Script: {fileID: 11500000, guid: b66bb21e1e770254c9ee20ff1eb90302, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ourLineText: {fileID: 1007147155}
+  mainCamera: {fileID: 519420028}
 --- !u!1 &1032720058
 GameObject:
   m_ObjectHideFlags: 0

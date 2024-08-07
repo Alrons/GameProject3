@@ -38,17 +38,15 @@ public class Refrash : MonoBehaviour
 
     }
 
-    // for future
-
-    //public void RefreshLinePower()
-    //{
-    //    TableCreator tableCreator = GetComponent<TableCreator>();
-    //    foreach (Text txt in tableCreator.textsLinePower)
-    //    {
-    //        PowerForLine powerForLine = txt.GetComponent<PowerForLine>();
-    //        powerForLine.CulculateLine();
-    //    }
-    //}
+    public void RefreshLinePower()
+    {
+        TableCreator tableCreator = GetComponent<TableCreator>();
+        foreach (Text txt in tableCreator.textsLinePower)
+        {
+            PowerForLine powerForLine = txt.GetComponent<PowerForLine>();
+            powerForLine.CulculateLine();
+        }
+    }
 
     private int FindTableNumber(int NumberCell)
     {
@@ -136,8 +134,8 @@ public class Refrash : MonoBehaviour
                 Count++;
 
             }
-            // for future
-            //RefreshLinePower();
+            
+            RefreshLinePower();
         }
 
         return true;
@@ -183,8 +181,8 @@ public class Refrash : MonoBehaviour
                 }
                 count++;
             }
-            // for future
-            //RefreshLinePower();
+            
+            RefreshLinePower();
         }
         return true;
     }
