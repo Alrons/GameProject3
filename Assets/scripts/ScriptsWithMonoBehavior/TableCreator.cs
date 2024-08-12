@@ -29,6 +29,7 @@ public class TableCreator : MonoBehaviour
         for (int i = 0; i < height; i++)
         {
             ourCell.RemoveAll(item => item == null);
+            textsLinePower.RemoveAll(item => item == null);
             int startNumberCell = ourCell.Count;
 
             for (int j = 0; j < width; j++)

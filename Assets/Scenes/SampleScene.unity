@@ -660,7 +660,17 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  textsLinePower: []
+  textsLinePower:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &519420035
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -677,6 +687,7 @@ MonoBehaviour:
   prefabObject: {fileID: 1137503844}
   mainCamera: {fileID: 519420028}
   contentShop: {fileID: 977933509}
+  coins: {fileID: 829598483}
   title: {fileID: 721751492}
   price: {fileID: 2078043937}
   description: {fileID: 311443453}
@@ -974,6 +985,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameObjects: {fileID: 1137503844}
   mainCamera: {fileID: 519420028}
+  Coins: {fileID: 829598483}
 --- !u!114 &721751492 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1780401014858663259, guid: 032a72cfc45569047a538913e5ea1311, type: 3}
@@ -1106,6 +1118,7 @@ GameObject:
   - component: {fileID: 829598485}
   - component: {fileID: 829598487}
   - component: {fileID: 829598488}
+  - component: {fileID: 829598489}
   m_Layer: 0
   m_Name: Coins
   m_TagString: Untagged
@@ -1208,6 +1221,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 294be3a412b350b46917a3ad81fc6279, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &829598489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 829598483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61273310a6488d54bb88a2e0f5d17016, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currencyNames: []
+  currencyValues: 
+  mainCamera: {fileID: 519420028}
+  canvas: {fileID: 829598484}
+  pref: {fileID: 1053436452}
+  textCurrencyNames: {fileID: 1880543966}
+  textcurrencyValues: {fileID: 1032720060}
 --- !u!1001 &930688397
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1690,6 +1722,7 @@ MonoBehaviour:
   dragObject: {fileID: 1137503844}
   scrollRect: {fileID: 816124129}
   sciptSpawnObject: {fileID: 519420028}
+  coins: {fileID: 829598483}
 --- !u!1 &1180078394
 GameObject:
   m_ObjectHideFlags: 0

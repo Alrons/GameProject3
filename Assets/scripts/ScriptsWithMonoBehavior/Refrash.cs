@@ -12,8 +12,7 @@ public class Refrash : MonoBehaviour
     public GameObject mainCamera;
     public GameObject contentShop;
 
-    // for future
-    //public GameObject Coins;
+    public GameObject coins;
 
     public Text title;
     public Text price;
@@ -40,10 +39,12 @@ public class Refrash : MonoBehaviour
 
     public void RefreshLinePower()
     {
-        TableCreator tableCreator = GetComponent<TableCreator>();
+        TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
         foreach (Text txt in tableCreator.textsLinePower)
         {
+            
             PowerForLine powerForLine = txt.GetComponent<PowerForLine>();
+
             powerForLine.CulculateLine();
         }
     }
@@ -88,8 +89,8 @@ public class Refrash : MonoBehaviour
             TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
             int Count = 1;
 
-            // Cost refresh (for future)
-            //Coins.GetComponent<currency>().ChangeValues();
+            // Coins refresh
+            coins.GetComponent<Currency>().ChangeValues();
 
             foreach (GameObject gameobj in tableCreator.ourCell)
             {

@@ -23,22 +23,17 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
     public GameObject dragObject; // item
     public ScrollRect scrollRect;
     public GameObject sciptSpawnObject;
+    public GameObject coins;
 
     DragDropProperties dragDropProperties = new DragDropProperties();
 
     private Refrash refrash;
-
-    //for future
-    //private currency currency;
+    private Currency currency;
 
     private void Start()
     {
-        
-        //mainCamera = SciptSpawnObject.GetComponent<SpawnObject>();
         refrash = sciptSpawnObject.GetComponent<Refrash>();
-        
-        //for future
-        //currency = coins.GetComponent<currency>();
+        currency = coins.GetComponent<Currency>();
 
     }
 
@@ -67,8 +62,6 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
 
 
     }
-
-    //ShopItemModel shopItemModel = spawnObject.shopItemModels;
 
 
     public void OnTriggerStay2D(Collider2D collision)
@@ -128,15 +121,20 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         {
             if (dragDropProperties.FormIsFull)
             {
+                if (currency.currencyValues[Сurrency] >= Price)
+                {
                     ItemService itemService = new ItemService();
-
+                    currency.currencyValues[Сurrency] = currency.currencyValues[Сurrency] - Price;
                     bool check = await itemService.PostAddedItem(new AddedItemModel(Id, 1, Title, Description, Price, Сurrency, Image, Place, Health, Power, XPower));
                     Refreshing(check);
 
                     Destroy(dragObject);
-
+                }
+                else
+                {
+                    Check = true;
+                }
             }
-
         }
         dragDropProperties.Form.GetComponent<Image>().color = new Color(255f, 255f, 255f, 0.1f);
         if (Check)
