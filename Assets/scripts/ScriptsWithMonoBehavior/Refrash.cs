@@ -50,15 +50,13 @@ public class Refrash : MonoBehaviour
 
     private int FindTableNumber(int NumberCell)
     {
-        int totalCells = 0;
-        foreach (var table in spawnObject.tableDataModel)
+        TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
+        foreach (CellNumberModel cellClass in tableCreator.hashSetCellNumber)
         {
-            int tableCells = table.Height * table.Width;
-            if (totalCells <= NumberCell && NumberCell <= totalCells + tableCells)
+            if (cellClass.cellNumber == NumberCell)
             {
-                return table.Id;
+                return cellClass.tableNumber;
             }
-            totalCells += tableCells;
         }
         return -1;
     }
@@ -91,9 +89,9 @@ public class Refrash : MonoBehaviour
             // Cost refresh (for future)
             //Coins.GetComponent<currency>().ChangeValues();
 
-            foreach (GameObject gameobj in tableCreator.ourCell)
+            foreach (CellNumberModel Cell in tableCreator.hashSetCellNumber)
             {
-
+                GameObject gameobj = Cell.cell;
                 foreach (Transform children in gameobj.transform)
                 {
                     Destroy(children.gameObject);
@@ -157,7 +155,7 @@ public class Refrash : MonoBehaviour
             int count = 0;
             foreach (ItemModel Item in spawnObject.allItems)
             {
-                if (spawnObject.allItems[count].place <= tableCreator.ourCell.Count)
+                if (spawnObject.allItems[count].place <= tableCreator.hashSetCellNumber.Count)
                 {
                     title.text = Item.title;
                     price.text = $"{Item.price}";
