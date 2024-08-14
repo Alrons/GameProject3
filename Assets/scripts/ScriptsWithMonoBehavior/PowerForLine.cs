@@ -17,16 +17,20 @@ public class PowerForLine : MonoBehaviour
 
     public bool CulculateLine()
     {
+        TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
         power = 0;
-        for (int i = StartNumberCell; i < EndNumberCell; i++)
+        foreach (CellNumberModel cellClass in tableCreator.hashSetCellNumber)
         {
-            TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
-            GameObject cell = tableCreator.ourCell[i];
-            foreach (Transform item in cell.transform)
+            if (cellClass.cellNumber <= EndNumberCell && cellClass.cellNumber > StartNumberCell)
             {
-                DragDrop dragDrop = item.GetComponent<DragDrop>();
-                power += dragDrop.Power;
+                GameObject cell = cellClass.cell;
+                foreach (Transform item in cell.transform)
+                {
+                    DragDrop dragDrop = item.GetComponent<DragDrop>();
+                    power += dragDrop.Power;
+                }
             }
+            
         }
         ourLineText.text = $"{power}";
         return true;
