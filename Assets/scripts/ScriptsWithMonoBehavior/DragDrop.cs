@@ -60,8 +60,13 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         if (!dragDropProperties.DidTheFormSearchWork)
         {
             TableCreator tableCreator = sciptSpawnObject.GetComponent<TableCreator>();
-            Debug.Log(tableCreator.ourCell[Place - 1]);
-            dragDropProperties.Form = tableCreator.ourCell[Place - 1];
+            foreach (CellNumberModel cellClass in tableCreator.hashSetCellNumber)
+            {
+                if (cellClass.cellNumber == Place)
+                {
+                    dragDropProperties.Form = cellClass.cell;
+                }
+            }
             dragDropProperties.DidTheFormSearchWork = true;
         }
 

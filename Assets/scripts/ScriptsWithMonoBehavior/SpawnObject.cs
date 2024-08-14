@@ -83,7 +83,7 @@ public class SpawnObject : MonoBehaviour
             if (count != allItems.Count)
             {
                 TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
-                if (allItems[i].place <= tableCreator.ourCell.Count)
+                if (allItems[i].place <= tableCreator.hashSetCellNumber.Count)
                 {
                     ChangePref(allItems[i].title, allItems[i].price, allItems[i].description, allItems[i].health, allItems[i].power, allItems[i].xPover);
                     GameObject gmItem = CopyPref(box, box.transform.position, canvasObject);
@@ -134,9 +134,9 @@ public class SpawnObject : MonoBehaviour
 
         TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
         int Count = 1;
-        foreach (GameObject gameobj in tableCreator.ourCell)
+        foreach (CellNumberModel Cell in tableCreator.hashSetCellNumber)
         {
-
+            GameObject gameobj = Cell.cell;
             foreach (Transform children in gameobj.transform)
             {
                 Destroy(children.gameObject);
