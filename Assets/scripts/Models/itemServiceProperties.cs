@@ -7,7 +7,7 @@ using UnityEngine;
 public class ItemServiceProperties
 {
     // Use a constant for the base URL
-    public readonly string baseUrl = "https://localhost:7139/api/";
+    public readonly string baseUrl = "https://localhost:7090/api/";
 
     // Use a readonly field for the HTTP client
     public HttpClient _httpClient { get; set; }
@@ -30,6 +30,6 @@ public class ItemServiceProperties
         _AddedItemsUrl = "AddedItems/";
         _Items = "Items/";
         _SizeTables = "SizeTables/";
-        _OurTables = "OurTables/";
+        _OurTables = "Tables/";
     }
 }
