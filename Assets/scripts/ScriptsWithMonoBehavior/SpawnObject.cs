@@ -45,7 +45,6 @@ public class SpawnObject : MonoBehaviour
         tableDataModel = JsonConvert.DeserializeObject<List<TableDataModel>>(OurTablseJson);
 
         Initializing();
-
     }
     private void Initializing()
     {
