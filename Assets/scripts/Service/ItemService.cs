@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class ItemService : IItemService
 {
-    private ItemServiceProperties itemServiseProperties = new ItemServiceProperties();
+    private ItemServiceProperties _itemServiseProperties = new ItemServiceProperties();
     public async Task<bool> DeleteAddedItem(int id)
     {
         try
@@ -17,7 +17,7 @@ public class ItemService : IItemService
             // Use the BaseUrl constant
             for (int i = 0; i < 2; i++)
             {
-                response = await itemServiseProperties._httpClient.DeleteAsync($"{itemServiseProperties.baseUrl}{itemServiseProperties._AddedItemsUrl}{id}");
+                response = await _itemServiseProperties.HttpClient.DeleteAsync($"{_itemServiseProperties.baseUrl}{_itemServiseProperties.AddedItemsUrl}{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     break;
@@ -41,7 +41,7 @@ public class ItemService : IItemService
             // Use the BaseUrl constant
             for (int i = 0; i < 2; i++)
             {
-                response = await itemServiseProperties._httpClient.DeleteAsync($"{itemServiseProperties.baseUrl}{itemServiseProperties._Items}{id}");
+                response = await _itemServiseProperties.HttpClient.DeleteAsync($"{_itemServiseProperties.baseUrl}{_itemServiseProperties.Items}{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     break;
@@ -64,7 +64,7 @@ public class ItemService : IItemService
             HttpResponseMessage response = default;
             for (int i = 0; i < 2; i++)
             {
-                response = await itemServiseProperties._httpClient.GetAsync(itemServiseProperties._AddedItemsUrl);
+                response = await _itemServiseProperties.HttpClient.GetAsync(_itemServiseProperties.AddedItemsUrl);
                 if (response.IsSuccessStatusCode)
                 {
                     break;
@@ -87,7 +87,7 @@ public class ItemService : IItemService
             HttpResponseMessage response = default;
             for (int i = 0; i < 2; i++)
             {
-                response = await itemServiseProperties._httpClient.GetAsync(itemServiseProperties._Items);
+                response = await _itemServiseProperties.HttpClient.GetAsync(_itemServiseProperties.Items);
                 if (response.IsSuccessStatusCode)
                 {
                     break;
@@ -111,7 +111,7 @@ public class ItemService : IItemService
             HttpResponseMessage response = default;
             for (int i = 0; i < 2; i++)
             {
-                response = await itemServiseProperties._httpClient.GetAsync(itemServiseProperties._OurTables);
+                response = await _itemServiseProperties.HttpClient.GetAsync(_itemServiseProperties.OurTables);
                 if (response.IsSuccessStatusCode)
                 {
                     break;
@@ -134,7 +134,7 @@ public class ItemService : IItemService
         {
             var json = JsonUtility.ToJson(model);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await itemServiseProperties._httpClient.PostAsync(itemServiseProperties._AddedItemsUrl, content);
+            var response = await _itemServiseProperties.HttpClient.PostAsync(_itemServiseProperties.AddedItemsUrl, content);
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
             Debug.Log("Response: " + responseBody);
@@ -154,7 +154,7 @@ public class ItemService : IItemService
         {
             var json = JsonUtility.ToJson(model);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await itemServiseProperties._httpClient.PostAsync(itemServiseProperties._Items, content);
+            var response = await _itemServiseProperties.HttpClient.PostAsync(_itemServiseProperties.Items, content);
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
             Debug.Log("Response: " + responseBody);
