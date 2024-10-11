@@ -21,7 +21,8 @@ public class ForDelete : MonoBehaviour, IPointerClickHandler
         {
             ItemService ItemService = new ItemService();
             ItemService.DeleteAddedItem(dragDropScript.Id);
-            bool Cheak = await ItemService.PostItem(new ItemModel(dragDropScript.Id, dragDropScript.Title, dragDropScript.Description, dragDropScript.Price, dragDropScript.Сurrency, dragDropScript.Image, dragDropScript.Place, dragDropScript.Health, dragDropScript.Power, dragDropScript.XPower));
+
+            bool Cheak = await ItemService.PostItem(new ItemRequest(1, dragDropScript.Title, dragDropScript.Description, dragDropScript.Price, dragDropScript.Сurrency, dragDropScript.Image, dragDropScript.Place, dragDropScript.Health, dragDropScript.Power, dragDropScript.XPower));
 
             if (Cheak)
             {

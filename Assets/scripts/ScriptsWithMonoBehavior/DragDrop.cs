@@ -134,8 +134,7 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
             if (dragDropProperties.FormIsFull)
             {
                     ItemService itemService = new ItemService();
-
-                    bool check = await itemService.PostAddedItem(new AddedItemModel(Id, 1, Title, Description, Price, Сurrency, Image, Place, Health, Power, XPower));
+                    bool check = await itemService.PostAddedItem(new AddedItemsRequest(1, Title, Description, Price, Сurrency, Image, Place, Health, Power, XPower));
                     Refreshing(check);
 
                     Destroy(dragObject);

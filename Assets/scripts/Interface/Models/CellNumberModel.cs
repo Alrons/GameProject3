@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-
 public class CellNumberModel
 {
     public GameObject cell;
