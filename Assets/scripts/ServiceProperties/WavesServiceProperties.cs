@@ -11,7 +11,6 @@ public class WavesServiceProperties
     // Use a constant for the base URL
     public readonly string baseUrl = "https://localhost:7090/api/";
 
-    // Use a readonly field for the HTTP client
     public HttpClient HttpClient { get; set; }
 
     public string Waves {  get; set; }

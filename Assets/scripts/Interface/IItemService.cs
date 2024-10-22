@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEngine;
-
 public interface IItemService
 {
     Task<string> GetItem();
@@ -11,9 +7,9 @@ public interface IItemService
 
     Task<string> GetOurTables();
 
-    Task<bool> PostItem(ItemModel model);
+    Task<bool> PostItem(ItemRequest model);
 
-    Task<bool> PostAddedItem(AddedItemModel model);
+    Task<bool> PostAddedItem(AddedItemsRequest model);
 
     Task<bool> DeleteItem(int id);
 

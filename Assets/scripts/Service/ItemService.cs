@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,28 +9,27 @@ using UnityEngine;
 
 public class ItemService : IItemService
 {
-    private ItemServiceProperties _itemServiseProperties = new ItemServiceProperties();
+    private readonly ItemServiceProperties _itemServiceProperties = new ItemServiceProperties();
+
     public async Task<bool> DeleteAddedItem(int id)
     {
         try
         {
-            HttpResponseMessage response = default;
-            // Use the BaseUrl constant
+            HttpResponseMessage response = null;
             for (int i = 0; i < 2; i++)
             {
-                response = await _itemServiseProperties.HttpClient.DeleteAsync($"{_itemServiseProperties.baseUrl}{_itemServiseProperties.AddedItemsUrl}{id}");
+                response = await _itemServiceProperties.HttpClient.DeleteAsync($"{_itemServiceProperties.baseUrl}{_itemServiceProperties.AddedItems}{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     break;
                 }
-                
             }
             return response.IsSuccessStatusCode;
         }
         catch (HttpRequestException ex)
         {
             Debug.LogError($"Error deleting item: {ex.Message}");
-            throw; // re-throw the exception
+            throw;
         }
     }
 
@@ -37,23 +37,21 @@ public class ItemService : IItemService
     {
         try
         {
-            HttpResponseMessage response = default;
-            // Use the BaseUrl constant
+            HttpResponseMessage response = null;
             for (int i = 0; i < 2; i++)
             {
-                response = await _itemServiseProperties.HttpClient.DeleteAsync($"{_itemServiseProperties.baseUrl}{_itemServiseProperties.Items}{id}");
+                response = await _itemServiceProperties.HttpClient.DeleteAsync($"{_itemServiceProperties.baseUrl}{_itemServiceProperties.Items}{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     break;
                 }
-
             }
             return response.IsSuccessStatusCode;
         }
         catch (HttpRequestException ex)
         {
             Debug.LogError($"Error deleting item: {ex.Message}");
-            throw; // re-throw the exception
+            throw;
         }
     }
 
@@ -61,10 +59,10 @@ public class ItemService : IItemService
     {
         try
         {
-            HttpResponseMessage response = default;
+            HttpResponseMessage response = null;
             for (int i = 0; i < 2; i++)
             {
-                response = await _itemServiseProperties.HttpClient.GetAsync(_itemServiseProperties.AddedItemsUrl);
+                response = await _itemServiceProperties.HttpClient.GetAsync($"{_itemServiceProperties.AddedItems}{_itemServiceProperties.UserId}");
                 if (response.IsSuccessStatusCode)
                 {
                     break;
@@ -76,7 +74,7 @@ public class ItemService : IItemService
         catch (HttpRequestException ex)
         {
             Debug.LogError($"Error getting added items: {ex.Message}");
-            throw; // re-throw the exception
+            throw;
         }
     }
 
@@ -84,10 +82,10 @@ public class ItemService : IItemService
     {
         try
         {
-            HttpResponseMessage response = default;
+            HttpResponseMessage response = null;
             for (int i = 0; i < 2; i++)
             {
-                response = await _itemServiseProperties.HttpClient.GetAsync(_itemServiseProperties.Items);
+                response = await _itemServiceProperties.HttpClient.GetAsync($"{_itemServiceProperties.Items}{_itemServiceProperties.UserId}");
                 if (response.IsSuccessStatusCode)
                 {
                     break;
@@ -95,12 +93,11 @@ public class ItemService : IItemService
             }
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
-
         }
         catch (HttpRequestException ex)
         {
-            Debug.LogError($"Error getting added items: {ex.Message}");
-            throw; // re-throw the exception
+            Debug.LogError($"Error getting items: {ex.Message}");
+            throw;
         }
     }
 
@@ -108,10 +105,10 @@ public class ItemService : IItemService
     {
         try
         {
-            HttpResponseMessage response = default;
+            HttpResponseMessage response = null;
             for (int i = 0; i < 2; i++)
             {
-                response = await _itemServiseProperties.HttpClient.GetAsync(_itemServiseProperties.OurTables);
+                response = await _itemServiceProperties.HttpClient.GetAsync($"{_itemServiceProperties.Tables}");
                 if (response.IsSuccessStatusCode)
                 {
                     break;
@@ -119,53 +116,51 @@ public class ItemService : IItemService
             }
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
-
         }
         catch (HttpRequestException ex)
         {
-            Debug.LogError($"Error getting added items: {ex.Message}");
-            throw; // re-throw the exception
+            Debug.LogError($"Error getting tables: {ex.Message}");
+            throw;
         }
     }
 
-    public async Task<bool> PostAddedItem(AddedItemModel model)
+    public async Task<bool> PostAddedItem(AddedItemsRequest model)
     {
         try
         {
-            var json = JsonUtility.ToJson(model);
+            string json = JsonConvert.SerializeObject(model, Formatting.Indented);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _itemServiseProperties.HttpClient.PostAsync(_itemServiseProperties.AddedItemsUrl, content);
-            response.EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-            Debug.Log("Response: " + responseBody);
+
+            var response = await _itemServiceProperties.HttpClient.PostAsync($"{_itemServiceProperties.AddedItems}save", content);
+
+            response.EnsureSuccessStatusCode(); // Ensure the response was successful
 
             return true;
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
             Debug.LogError("Error: " + ex.Message);
-            throw; // re-throw the exception
+            throw;
         }
     }
 
-    public async Task<bool> PostItem(ItemModel model)
+    public async Task<bool> PostItem(ItemRequest model)
     {
         try
         {
-            var json = JsonUtility.ToJson(model);
+            string json = JsonConvert.SerializeObject(model, Formatting.Indented);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _itemServiseProperties.HttpClient.PostAsync(_itemServiseProperties.Items, content);
-            response.EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-            Debug.Log("Response: " + responseBody);
+
+            var response = await _itemServiceProperties.HttpClient.PostAsync($"{_itemServiceProperties.Items}save", content);
+
+            response.EnsureSuccessStatusCode(); // Ensure the response was successful
 
             return true;
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
             Debug.LogError("Error: " + ex.Message);
-            throw; // re-throw the exception
+            throw;
         }
     }
-
 }
