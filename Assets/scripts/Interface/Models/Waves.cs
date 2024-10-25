@@ -1,21 +1,38 @@
-﻿public class Waves
+﻿using System;
+
+public class Waves
 {
-    public int id;
+    public int Id { get; set; }
 
-    public int userID;
+    public int UserID { get; set; }
 
-    public int wavesNumber;
+    public int WavesNumber { get; set; }
 
-    public int durationInSeconds;
+    public int DurationInSeconds { get; set; }
 
-    public int wavesPower;
+    public int WavesPower { get; set; }
 
-    public Waves (int id, int userID, int wavesNumber, int durationInSeconds, int wavesPower) 
+    public DateTime StartWave { get; set; }
+
+    public double Passing { get; set; }
+
+    public double WaveEnd { get; set; }
+
+    public int WaveHealth { get; set; }
+
+    public int Status { get; set; }
+
+    public Waves (int id, int userID, int wavesNumber, int durationInSeconds, int wavesPower, DateTime startWave, double passing, double waveEnd, int waveHealth, int status) 
     { 
-        this.id = id;
-        this.userID = userID;
-        this.wavesNumber = wavesNumber;
-        this.durationInSeconds = durationInSeconds;
-        this.wavesPower = wavesPower;
+        Id = id;
+        UserID = userID;
+        WavesNumber = wavesNumber;
+        DurationInSeconds = durationInSeconds;
+        WavesPower = wavesPower;
+        StartWave = startWave;
+        Passing = passing;
+        WaveEnd = waveEnd;
+        WaveHealth = waveHealth;
+        Status = status;
     }
 }

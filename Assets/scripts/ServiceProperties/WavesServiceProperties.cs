@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 public class WavesServiceProperties
 {
     // Use a constant for the base URL
-    public readonly string baseUrl = "https://localhost:7090/api/";
+    public readonly string baseUrl = "https://localhost:7075/api/";
 
     public HttpClient HttpClient { get; set; }
 
-    public string Waves {  get; set; }
+    public string Wave {  get; set; }
 
     public WavesServiceProperties() 
     {
         // Initialize the HTTP client
         HttpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
 
-        Waves = "Waves/";
+        Wave = "Wave/";
     }
 }

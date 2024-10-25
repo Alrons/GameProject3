@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 
-internal class WavesService : IWavesService
+public class WavesService : IWavesService
 {
     private WavesServiceProperties _wavesServiceProperties = new WavesServiceProperties();
 
-    public async Task<string> GetWaveAsync(WavesRequest waves)
+    public async Task<string> PatchWaveStrength(WavesRequest waves)
     {
         try
         {
             string json = JsonConvert.SerializeObject(waves, Formatting.Indented);
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _wavesServiceProperties.HttpClient.PatchAsync(_wavesServiceProperties.Waves, content);
+            var response = await _wavesServiceProperties.HttpClient.PutAsync("https://localhost:7075/api/Wave/startWave", content);
 
             response.EnsureSuccessStatusCode(); // Ensure that the response is successful
 
@@ -40,7 +40,7 @@ internal class WavesService : IWavesService
             // Retry the request up to 2 times if necessary
             for (int i = 0; i < 2; i++)
             {
-                response = await _wavesServiceProperties.HttpClient.GetAsync($"{_wavesServiceProperties.Waves}{userId}");
+                response = await _wavesServiceProperties.HttpClient.GetAsync($"{_wavesServiceProperties.Wave}{userId}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -56,7 +56,7 @@ internal class WavesService : IWavesService
         }
         catch (HttpRequestException ex)
         {
-            Debug.LogError($"Error getting added items: {ex.Message}");
+            Debug.LogError($"Error getting: {ex.Message}");
             throw; // re-throw the exception
         }
     }
@@ -68,7 +68,7 @@ internal class WavesService : IWavesService
             string json = JsonConvert.SerializeObject(wave, Formatting.Indented);
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _wavesServiceProperties.HttpClient.PutAsync(_wavesServiceProperties.Waves, content);
+            var response = await _wavesServiceProperties.HttpClient.PutAsync("https://localhost:7075/api/Wave/changeWave", content);
 
             // Ensure the response was successful
             response.EnsureSuccessStatusCode();
