@@ -111,15 +111,13 @@ public class SpawnObject : MonoBehaviour
     }
     private int FindTableNumber(int NumberCell)
     {
-        int totalCells = 0;
-        foreach (var table in tableDataModel)
+        TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
+        foreach (CellNumberModel cellClass in tableCreator.hashSetCellNumber)
         {
-            int tableCells = table.Height * table.Width;
-            if (totalCells <= NumberCell && NumberCell <= totalCells + tableCells)
+            if (cellClass.cellNumber == NumberCell)
             {
-                return table.Id;
+                return cellClass.tableNumber;
             }
-            totalCells += tableCells;
         }
         return -1;
     }
