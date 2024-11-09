@@ -24,6 +24,8 @@ public class SpawnObject : MonoBehaviour
     public Transform canvasObject;
     public GameObject mainCamera;
 
+    public bool isLoading = false;
+
     async void Start()
     {
         ItemService ItemService = new ItemService();
@@ -51,6 +53,7 @@ public class SpawnObject : MonoBehaviour
 
         Refrash refrash = mainCamera.GetComponent<Refrash>();
         refrash.RefreshLinePower();
+        isLoading = true;
     }
     public GameObject CopyPref(GameObject box, Vector3 position, Transform setparent)
     {
