@@ -3,137 +3,158 @@ using System;
 using UnityEngine;
 using System.Threading.Tasks;
 using UnityEngine.UI;
-using static UnityEditor.Timeline.Actions.MenuPriority;
+using System.Collections;
+
 
 public class WaveMovement : MonoBehaviour
 {
     public Button startButton;
-
     public Vector3 targetPosition;
-    public Vector3 StartPos;
+    public Vector3 startPos;
     public float duration;
     public float startPercentage;
+    public float progress;
+
+    public int levelDevenc;
 
     public WavesRequest towerPower;
     public Waves Wave;
     public GameObject mainCamera;
+    private WaveHealth waveHealth;
+    SpawnObject spawnObject;
 
     private float timer;
     private bool isMoving = false; // flag to control movement
     private float waveEndPercentage; // percentage at which the wave should stop
-    
+
+    public bool isLoading = false;
+
     void Start()
     {
-        towerPower = new WavesRequest()
+        towerPower = new WavesRequest
         {
             UserID = 1,
-            WavesNumber = 0,
-            FirstLevelOfProtectionPower = 0,
-            SecondLevelOfProtectionPower = 0,
-            ThirdLevelOfProtectionPower = 0
+            WavesNumber = 0
         };
-        GetTowerPower();
-        StaticWavePos();
-        InitializingWaveData();
-
-        startButton.onClick.AddListener(StartMovement);
-
-        
+        levelDevenc = 4;
+        spawnObject = mainCamera.GetComponent<SpawnObject>();
+        StartCoroutine(InitializeSpawnObject());
     }
 
     void Update()
     {
-        if (isMoving)
+        if (!isMoving) return;
+
+        timer += Time.deltaTime;
+        progress = (timer / duration) + (startPercentage / 100f);
+
+        float healthPercent = CalculateHealthPercentage(progress);
+        waveHealth.ConditionalDamage((healthPercent / Wave.WaveHealth) * 100);
+
+        if (progress >= (waveEndPercentage / 100f))
         {
-            timer += Time.deltaTime;
-            float t = (timer / duration) + (startPercentage / 100f); // adjust for start percentage
-
-            // Check if we reached the wave end percentage (WaveEnd)
-            if (t >= (waveEndPercentage / 100f))
-            {
-                t = waveEndPercentage / 100f; // limit to not exceed the final percentage
-                isMoving = false; // stop movement
-                OnWaveComplete(); // trigger action on completion
-                return;
-            }
-
-            transform.position = Vector3.Lerp(StartPos, targetPosition, t);
+            progress = waveEndPercentage / 100f;
+            isMoving = false;
+            OnWaveComplete();
+            return;
         }
+
+        transform.position = Vector3.Lerp(startPos, targetPosition, progress);
     }
-    // Initialize wave data from the server
-    public async void InitializingWaveData()
+
+    private IEnumerator InitializeSpawnObject()
+    {
+        // Check every 0.1 seconds for SpawnObject loading completion
+        while (spawnObject == null || !spawnObject.isLoading)
+        {
+            spawnObject = mainCamera.GetComponent<SpawnObject>();
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        GetTowerPower();
+        SetupWavePosition();
+        InitializeWaveData();
+        waveHealth = mainCamera.GetComponent<WaveHealth>();
+        startButton.onClick.AddListener(StartMovement);
+    }
+
+    private float CalculateHealthPercentage(float t)
+    {
+        if (t < WaveConstants.firstlevel)
+            return Mathf.Lerp(Wave.WaveHealth, Wave.HealthLevel1, t / WaveConstants.firstlevel);
+
+        if (t < WaveConstants.secondLevel)
+        {
+            levelDevenc = 2;
+            return Mathf.Lerp(Wave.HealthLevel1, Wave.HealthLevel2, (t - WaveConstants.firstlevel) / WaveConstants.firstlevel);
+        }
+
+        levelDevenc = 1;
+        return Mathf.Lerp(Wave.HealthLevel2, Wave.HealthLevel3, (t - WaveConstants.secondLevel) / WaveConstants.secondLevel);
+    }
+
+    public async void InitializeWaveData()
     {
         WavesService wavesService = new WavesService();
-        string WaveJson = await wavesService.GetWaves(1);
-        BaseResponse<Waves> baseResponseItems = JsonConvert.DeserializeObject<BaseResponse<Waves>>(WaveJson);
-        Wave = baseResponseItems.Result;
-        SetData(Wave);
-        if (Wave.Status == 2)
-        {
-            await InitializingStartedWave(); 
-        }
-        if (Wave.Status == 4) { WaveIsLost(); }
+        string waveJson = await wavesService.GetWaves(1);
+        var response = JsonConvert.DeserializeObject<BaseResponse<Waves>>(waveJson);
+        Wave = response.Result;
+        ConfigureWaveData(Wave);
 
+        if (Wave.Status == 2) await StartInitializedWave();
+        if (Wave.Status == 4) WaveIsLost();
     }
-    private async Task InitializingStartedWave()
+
+    private async Task StartInitializedWave()
     {
         WavesService wavesService = new WavesService();
-        string WaveJson = await wavesService.PatchWaveStrength(towerPower);
-        BaseResponse<Waves> baseResponseItems = JsonConvert.DeserializeObject<BaseResponse<Waves>>(WaveJson);
-        Wave = baseResponseItems.Result;
-        SetData(Wave);
+        string waveJson = await wavesService.PatchWaveStrength(towerPower);
+        var response = JsonConvert.DeserializeObject<BaseResponse<Waves>>(waveJson);
+        Wave = response.Result;
+        ConfigureWaveData(Wave);
         isMoving = true;
     }
-    private void SetData(Waves Wave)
+
+    private void ConfigureWaveData(Waves wave)
     {
-        duration = (float)Wave.DurationInSeconds;
-        startPercentage = (float)Wave.Passing; // set the start percentage for the wave
-        waveEndPercentage = (float)Wave.WaveEnd; // set the final percentage for the wave
+        duration = wave.DurationInSeconds;
+        startPercentage = (float)wave.Passing;
+        waveEndPercentage = (float)wave.WaveEnd;
 
         float t = startPercentage / 100f;
-        transform.position = Vector3.Lerp(StartPos, targetPosition, t);
+        transform.position = Vector3.Lerp(startPos, targetPosition, t);
     }
 
-    // Method to trigger the movement
     public async void StartMovement()
     {
         if (!isMoving)
         {
             GetTowerPower();
-            await InitializingStartedWave();
+            await StartInitializedWave();
             isMoving = true;
         }
-        
     }
 
-    // Method triggered when the wave completes its movement
     private void OnWaveComplete()
     {
-        Debug.Log(Wave.WavesNumber);
-        Debug.Log(towerPower.FirstLevelOfProtectionPower);
-        Debug.Log(towerPower.SecondLevelOfProtectionPower);
-        Debug.Log(towerPower.ThirdLevelOfProtectionPower);
-        if (waveEndPercentage != 100f)
-        {
-            Debug.Log("Win!");
-            WaveIsWin();
-        }
-        else
-        {
-            Debug.Log("Lose!");
-            WaveIsLost();
-        }
+        Debug.Log(waveEndPercentage != 100f ? "Win!" : "Lose!");
+        if (waveEndPercentage != 100f) WaveIsWin();
+        else WaveIsLost();
+
+        levelDevenc = 10;
     }
+
     private void GetTowerPower()
     {
         towerPower.FirstLevelOfProtectionPower = 0;
         towerPower.SecondLevelOfProtectionPower = 0;
         towerPower.ThirdLevelOfProtectionPower = 0;
-        SpawnObject spawnObject = mainCamera.GetComponent<SpawnObject>();
-        foreach (AddedItemModel addedItem in spawnObject.addedItemsList)
+
+        foreach (var addedItem in spawnObject.addedItemsList)
         {
             int tableNumber = FindTableNumber(addedItem.place);
-            switch (tableNumber) 
+
+            switch (tableNumber)
             {
                 case 1:
                     towerPower.FirstLevelOfProtectionPower += addedItem.power;
@@ -145,35 +166,55 @@ public class WaveMovement : MonoBehaviour
                     towerPower.ThirdLevelOfProtectionPower += addedItem.power;
                     break;
             }
-
         }
     }
-    private int FindTableNumber(int NumberCell)
+
+    private int FindTableNumber(int cellNumber)
     {
-        TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
-        foreach (CellNumberModel cellClass in tableCreator.hashSetCellNumber)
-        {
-            if (cellClass.cellNumber == NumberCell)
-            {
+        var tableCreator = mainCamera.GetComponent<TableCreator>();
+        foreach (var cellClass in tableCreator.hashSetCellNumber)
+            if (cellClass.cellNumber == cellNumber)
                 return cellClass.tableNumber;
-            }
-        }
+
         return -1;
     }
 
-    private void StaticWavePos()
+    private void SetupWavePosition()
     {
-        StartPos = new Vector3(-200, 100, 0);
-        transform.position = StartPos;
+        startPos = new Vector3(-200, 100, 0);
+        transform.position = startPos;
         targetPosition = new Vector3(350, 100, 0);
+        isLoading = true;
     }
-    
+
     private async void WaveIsLost()
     {
+        ResetWave();
+        await new WavesService().PutWaveAsync(CreateWaveChangeRequest());
+        TowerPlase towerPlase = mainCamera.GetComponent<TowerPlase>();
+        StartCoroutine(towerPlase.InitializeWaveMovementAndSpawn());
+    }
+
+    private async void WaveIsWin()
+    {
+        await StartInitializedWave();
+        ResetWave();
+        InitializeWaveData();
+        TowerPlase towerPlase = mainCamera.GetComponent<TowerPlase>();
+        StartCoroutine(towerPlase.InitializeWaveMovementAndSpawn());
+    }
+
+    private void ResetWave()
+    {
         isMoving = false;
-        StaticWavePos();
         timer = 0;
-        ChangeWaveRequest request = new ChangeWaveRequest
+        SetupWavePosition();
+        waveHealth.ConditionalDamage(100f);
+    }
+
+    private ChangeWaveRequest CreateWaveChangeRequest()
+    {
+        return new ChangeWaveRequest
         {
             Id = Wave.Id,
             UserID = Wave.UserID,
@@ -186,16 +227,5 @@ public class WaveMovement : MonoBehaviour
             WaveHealth = Wave.WaveHealth,
             Status = 1
         };
-        WavesService wavesService = new WavesService();
-        await wavesService.PutWaveAsync(request);
-
-    }
-    private async void WaveIsWin()
-    {
-        await InitializingStartedWave();
-        isMoving = false;
-        timer = 0;
-        StaticWavePos();
-        InitializingWaveData();
     }
 }
