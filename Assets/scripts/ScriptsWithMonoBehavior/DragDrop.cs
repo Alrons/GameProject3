@@ -102,10 +102,6 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         //image.raycastTarget = false;
         dragDropProperties.StartPos = dragObject.transform.position; // We take the coordinates of the initial position and remember
         dragDropProperties.Form.GetComponent<Image>().color = new Color(255f, 255f, 255f, 0.6f);
-
-
-
-
     }
 
     public void OnDrag(PointerEventData eventData) 
@@ -113,8 +109,6 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         dragDropProperties.RecetTransform = GetComponent<RectTransform>();
         dragDropProperties.RecetTransform.anchoredPosition += eventData.delta;
     }
-
-
      
     IEnumerator CantUseForm()
     {
@@ -136,11 +130,8 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
                     ItemService itemService = new ItemService();
                     bool check = await itemService.PostAddedItem(new AddedItemsRequest(1, Title, Description, Price, Сurrency, Image, Place, Health, Power, XPower));
                     Refreshing(check);
-
                     Destroy(dragObject);
-
             }
-
         }
         dragDropProperties.Form.GetComponent<Image>().color = new Color(255f, 255f, 255f, 0.1f);
         if (Check)
