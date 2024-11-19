@@ -18,7 +18,7 @@ public class TableCreator : MonoBehaviour
     public List<Text> textsLinePower = new List<Text>();
     public HashSet<CellNumberModel> hashSetCellNumber = new HashSet<CellNumberModel>();
 
-    private int cellSpacing = 100; // distance between the cells
+    private int cellSpacing = 80; // distance between the cells
 
     public void CreateTable(int width, int height, Vector3 Position, double Rotate)
     {
@@ -68,7 +68,7 @@ public class TableCreator : MonoBehaviour
 
         gameObject.transform.localScale = new Vector3(1, 1, 1);
         rectTransfrom = gameObject.GetComponent<RectTransform>();
-        rectTransfrom.sizeDelta = new Vector2(((width - 1) * 200) + 170, ((height - 1) * 130) + 75);
+        rectTransfrom.sizeDelta = new Vector2(((width - 1) * 200) + 150, ((height - 1) * 130) + 50);
         gameObject.transform.Rotate(0, 0, (float)Rotate);
 
         
