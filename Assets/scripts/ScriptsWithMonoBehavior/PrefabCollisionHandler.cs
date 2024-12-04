@@ -22,7 +22,6 @@ public class PrefabCollisionHandler : MonoBehaviour
         {
             if (collider.gameObject == wave)
             {
-                Debug.Log("Prefab collided with wave, destroying prefab.");
                 Destroy(gameObject); // Destroy the prefab
                 break;               // Break the loop as the prefab is already destroyed
             }
