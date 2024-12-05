@@ -10,7 +10,7 @@ public class WebSocketManager
     {
         if (message == "item has been changed")
         {
-            webSocketMetods.UpdateAllItems(waveMovement.gameObject);
+            webSocketMetods.UpdateAllItems();
         }
         else if (message.StartsWith("{")) // check that the message is in JSON format
         {
