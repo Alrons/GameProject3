@@ -4,9 +4,10 @@ using UnityEngine;
 public class WebSocketMetods : MonoBehaviour 
 {
     private Refrash refrash;
-    public async void UpdateAllItems (GameObject mainCamera) 
+    public async void UpdateAllItems () 
     {
-        refrash = mainCamera.GetComponent<Refrash>();
+        GameObject mainCameraObject = GameObject.FindWithTag("MainCamera");
+        refrash = mainCameraObject.GetComponent<Refrash>();
         if (await refrash.RefreshPlaseforDrop())
         {
             await refrash.RefreshItemsInShop();

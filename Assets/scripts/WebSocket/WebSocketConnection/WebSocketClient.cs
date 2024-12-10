@@ -23,6 +23,9 @@ public class WebSocketClient
         {
             await clientWebSocket.ConnectAsync(serverUri, CancellationToken.None);
             Debug.Log("WebSocket connected to " + serverUri);
+
+            Send("userId:" + UserConst.userId);
+            
             await ReceiveMessagesAsync();
         }
         catch (Exception ex)
