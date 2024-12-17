@@ -39,5 +39,34 @@ public class WavesService : IWavesService
             throw; // re-throw the exception
         }
     }
+    public async Task<string> GetWaveStartPos()
+    {
+        try
+        {
+            HttpResponseMessage response = null;
+
+            // Retry the request up to 2 times if necessary
+            for (int i = 0; i < 2; i++)
+            {
+                response = await _wavesServiceProperties.HttpClient.GetAsync($"{_wavesServiceProperties.StartWavePos}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    break; // Break if request is successful
+                }
+
+            }
+
+            // Ensure the response was successful before proceeding
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync();
+        }
+        catch (HttpRequestException ex)
+        {
+            Debug.LogError($"Error getting: {ex.Message}");
+            throw; // re-throw the exception
+        }
+    }
 }
 
