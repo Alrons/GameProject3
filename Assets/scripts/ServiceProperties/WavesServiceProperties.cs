@@ -15,11 +15,15 @@ public class WavesServiceProperties
 
     public string Wave {  get; set; }
 
+    public string StartWavePos { get; set; }
+
     public WavesServiceProperties() 
     {
         // Initialize the HTTP client
         HttpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
 
         Wave = "Wave/";
+
+        StartWavePos = "WavePosition/";
     }
 }
