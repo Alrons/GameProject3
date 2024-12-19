@@ -30,17 +30,11 @@ public class SpawnObject : MonoBehaviour
     {
         ItemService ItemService = new ItemService();
 
-        string AddedItemJson = await ItemService.GetAddedItem();
-        BaseResponse<List<AddedItemModel>> baseResponseAddedItem = JsonConvert.DeserializeObject<BaseResponse<List<AddedItemModel>>>(AddedItemJson);
-        addedItemsList = baseResponseAddedItem.Result;
+        addedItemsList = await ItemService.GetAddedItem();
 
-        string ItemJson = await ItemService.GetItem();
-        BaseResponse<List<ItemModel>> baseResponseItems = JsonConvert.DeserializeObject<BaseResponse<List<ItemModel>>>(ItemJson);
-        allItems = baseResponseItems.Result;
+        allItems = await ItemService.GetItem();
 
-        string TablseJson = await ItemService.GetOurTables();
-        BaseResponse <List<TableDataModel>> baseResponseTable = JsonConvert.DeserializeObject<BaseResponse<List<TableDataModel>>>(TablseJson);
-        tableDataModel = baseResponseTable.Result;
+        tableDataModel = await ItemService.GetOurTables();
 
         Initializing();
     }
