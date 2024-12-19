@@ -55,7 +55,7 @@ public class ItemService : IItemService
         }
     }
 
-    public async Task<string> GetAddedItem()
+    public async Task<List<AddedItemModel>> GetAddedItem()
     {
         try
         {
@@ -69,7 +69,9 @@ public class ItemService : IItemService
                 }
             }
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+
+            string resultString = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<BaseResponse<List<AddedItemModel>>>(resultString).Result;
         }
         catch (HttpRequestException ex)
         {
@@ -78,7 +80,7 @@ public class ItemService : IItemService
         }
     }
 
-    public async Task<string> GetItem()
+    public async Task<List<ItemModel>> GetItem()
     {
         try
         {
@@ -92,7 +94,10 @@ public class ItemService : IItemService
                 }
             }
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+
+            string stringResult = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<BaseResponse<List<ItemModel>>>(stringResult).Result;
         }
         catch (HttpRequestException ex)
         {
@@ -101,7 +106,7 @@ public class ItemService : IItemService
         }
     }
 
-    public async Task<string> GetOurTables()
+    public async Task<List<TableDataModel>> GetOurTables()
     {
         try
         {
@@ -115,7 +120,8 @@ public class ItemService : IItemService
                 }
             }
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            string stringResult = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<BaseResponse<List<TableDataModel>>>(stringResult).Result;  
         }
         catch (HttpRequestException ex)
         {

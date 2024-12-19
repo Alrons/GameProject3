@@ -23,7 +23,7 @@ public class TowerPlase : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
 
-        SpawnPrefabs();
+        StartSpawnPrefabs();
     }
 
     private void Update()
@@ -60,8 +60,14 @@ public class TowerPlase : MonoBehaviour
         return instance;
     }
 
-    private void SpawnPrefabs()
+    private IEnumerator SpawnPrefabs()
     {
+        while (waveMovement.startPos == null)
+        {
+            yield return new WaitForSeconds(0.5f);  // wait for 0.5 seconds. to wait for this to load startPos
+        }
+         
+
         Vector2 firstPosition = CalculatePosition(waveMovement.startPos, waveMovement.targetPosition, WaveConstants.firstlevel);
         Vector2 secondPosition = CalculatePosition(waveMovement.startPos, waveMovement.targetPosition, WaveConstants.secondLevel);
 
@@ -76,12 +82,17 @@ public class TowerPlase : MonoBehaviour
         }
     }
 
+    private void StartSpawnPrefabs()
+    {
+        StartCoroutine(SpawnPrefabs());
+    }
+
     // Method to restore prefabs if they are destroyed
     public void RestorePrefabs()
     {
         if (firstInstanse == null || secondInstanse == null)
         {
-            SpawnPrefabs();
+            StartSpawnPrefabs();
         }
     }
 }

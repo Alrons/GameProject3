@@ -84,11 +84,8 @@ public class WaveMovement : MonoBehaviour
     private async void SetupWavePosition()
     {
         WavesService wavesService = new WavesService();
-        string stringWavePos = await wavesService.GetWaveStartPos();
-        BaseResponse<StartWavePosition> startWavePosition  = JsonConvert.DeserializeObject<BaseResponse<StartWavePosition>>(stringWavePos);
-        Debug.Log(startWavePosition.Result.X);
-        Debug.Log(startWavePosition.Result.Y);
-        startPos = new Vector3(startWavePosition.Result.X, startWavePosition.Result.Y, 0);
+        StartWavePosition wavePos = await wavesService.GetWaveStartPos();
+        startPos = new Vector3(wavePos.X, wavePos.Y, 0);
         transform.position = startPos;
         targetPosition = new Vector3(50, -150, 0);
     }

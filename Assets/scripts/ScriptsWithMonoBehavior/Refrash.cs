@@ -65,13 +65,10 @@ public class Refrash : MonoBehaviour
     {
         ItemService ItemService = new ItemService();
 
-        string AddedItemJson = await ItemService.GetAddedItem();
-        BaseResponse<List<AddedItemModel>> baseResponseAddedItem = JsonConvert.DeserializeObject<BaseResponse<List<AddedItemModel>>>(AddedItemJson);
-        spawnObject.addedItemsList = baseResponseAddedItem.Result;
+        spawnObject.addedItemsList = await ItemService.GetAddedItem();
 
-        string ItemJson = await ItemService.GetItem();
-        BaseResponse<List<ItemModel>> baseResponseItems = JsonConvert.DeserializeObject<BaseResponse<List<ItemModel>>>(ItemJson);
-        spawnObject.allItems = baseResponseItems.Result;
+        spawnObject.allItems = await ItemService.GetItem();
+
 
         return true;
     }
