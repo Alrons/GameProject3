@@ -1,11 +1,12 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 public interface IItemService
 {
-    Task<string> GetItem();
+    Task<List<ItemModel>> GetItem();
 
-    Task<string> GetAddedItem();
+    Task<List<AddedItemModel>> GetAddedItem();
 
-    Task<string> GetOurTables();
+    Task<List<TableDataModel>> GetOurTables();
 
     Task<bool> PostItem(ItemRequest model);
 

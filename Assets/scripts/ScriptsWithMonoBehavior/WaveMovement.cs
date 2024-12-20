@@ -1,4 +1,7 @@
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -78,9 +81,11 @@ public class WaveMovement : MonoBehaviour
         webSocketClient.Send("start_wave");
         isMoving = true;
     }
-    private void SetupWavePosition()
+    private async void SetupWavePosition()
     {
-        startPos = new Vector3(50, 150, 0);
+        WavesService wavesService = new WavesService();
+        StartWavePosition wavePos = await wavesService.GetWaveStartPos();
+        startPos = new Vector3(wavePos.X, wavePos.Y, 0);
         transform.position = startPos;
         targetPosition = new Vector3(50, -150, 0);
     }

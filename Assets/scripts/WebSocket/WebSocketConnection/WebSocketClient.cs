@@ -63,7 +63,6 @@ public class WebSocketClient
             {
                 var sendBuffer = Encoding.UTF8.GetBytes(message);
                 await clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
-                Debug.Log("Sent message: " + message);
             }
             catch (Exception ex)
             {

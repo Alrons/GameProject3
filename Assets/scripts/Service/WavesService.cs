@@ -10,7 +10,7 @@ public class WavesService : IWavesService
 {
     private WavesServiceProperties _wavesServiceProperties = new WavesServiceProperties();
 
-    public async Task<string> GetWaves(int userId)
+    public async Task<StartWavePosition> GetWaveStartPos()
     {
         try
         {
@@ -19,7 +19,7 @@ public class WavesService : IWavesService
             // Retry the request up to 2 times if necessary
             for (int i = 0; i < 2; i++)
             {
-                response = await _wavesServiceProperties.HttpClient.GetAsync($"{_wavesServiceProperties.Wave}{userId}");
+                response = await _wavesServiceProperties.HttpClient.GetAsync($"{_wavesServiceProperties.StartWavePos}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -31,7 +31,8 @@ public class WavesService : IWavesService
             // Ensure the response was successful before proceeding
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadAsStringAsync();
+            string result = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<BaseResponse<StartWavePosition>>(result).Result; 
         }
         catch (HttpRequestException ex)
         {
