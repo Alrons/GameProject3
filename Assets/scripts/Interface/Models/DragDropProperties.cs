@@ -13,6 +13,8 @@ public class DragDropProperties
 
     public bool DidTheFormSearchWork { get; set; }
 
+    public int LustState { get; set; }
+
     public DragDropProperties()
     {
         DidTheFormSearchWork = false;

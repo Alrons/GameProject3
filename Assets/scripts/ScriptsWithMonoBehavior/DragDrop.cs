@@ -80,7 +80,6 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
     {
         if (collision.gameObject == dragDropProperties.Form)
         {
-            Debug.Log("collision: works");
             dragDropProperties.PosNow = true;
         }
     }
@@ -100,19 +99,21 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         FindForm();
         scrollRect.vertical = false;
         //image.raycastTarget = false;
+        dragDropProperties.LustState = transform.GetComponent<ItemState>().itemState; // remember lust state
         dragDropProperties.StartPos = dragObject.transform.position; // We take the coordinates of the initial position and remember
         dragDropProperties.Form.GetComponent<Image>().color = new Color(255f, 255f, 255f, 0.6f);
     }
 
     public void OnDrag(PointerEventData eventData) 
     {
+        transform.GetComponent<ItemState>().itemState = 2; // change state
         dragDropProperties.RecetTransform = GetComponent<RectTransform>();
         dragDropProperties.RecetTransform.anchoredPosition += eventData.delta;
     }
      
     IEnumerator CantUseForm()
     {
-
+        
         dragDropProperties.Form.GetComponent<Image>().color = new Color(255f, 0f, 0f, 0.2f);
         yield return new WaitForSeconds(1);
         dragDropProperties.Form.GetComponent<Image>().color = new Color(255f, 255f, 255f, 0.1f);
@@ -138,7 +139,8 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         {
             StartCoroutine(CantUseForm());
         }
-        this.transform.position = dragDropProperties.StartPos; 
+        this.transform.position = dragDropProperties.StartPos;
+        transform.GetComponent<ItemState>().itemState = dragDropProperties.LustState;
     }
     private async void Refreshing(bool check)
     {

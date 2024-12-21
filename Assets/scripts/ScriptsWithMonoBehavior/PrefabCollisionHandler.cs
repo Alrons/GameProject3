@@ -22,7 +22,7 @@ public class PrefabCollisionHandler : MonoBehaviour
         {
             if (collider.gameObject == wave)
             {
-                Destroy(gameObject); // Destroy the prefab
+                gameObject.GetComponent<TowerState>().DestroyObject(); // Destroy the prefab
                 break;               // Break the loop as the prefab is already destroyed
             }
         }

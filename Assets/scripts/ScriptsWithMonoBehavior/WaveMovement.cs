@@ -120,6 +120,7 @@ public class WaveMovement : MonoBehaviour
         levelDevenc = 5;
         SetupWavePosition();
         waveHealth.ConditionalDamage(100);
+        ChangeItemState();
     }
     private void WaveLoos()
     {
@@ -128,12 +129,25 @@ public class WaveMovement : MonoBehaviour
         levelDevenc = 5;
         SetupWavePosition();
         waveHealth.ConditionalDamage(100);
+        ChangeItemState();
     }
 
     private void UpdateWavePosition()
     {
         // Update wave position based on progress
         transform.position = Vector3.Lerp(startPos, targetPosition, progress);
+    }
+
+    private void ChangeItemState()
+    {
+        GameObject[] items = GameObject.FindGameObjectsWithTag("Item");
+        foreach (GameObject item in items)
+        {
+            if (item.GetComponent<ItemState>().itemState == 3)
+            {
+                item.GetComponent<ItemState>().itemState = 1;
+            }
+        }
     }
 
     void OnDestroy()

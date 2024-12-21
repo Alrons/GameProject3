@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
 public class FireFromItem : MonoBehaviour
@@ -12,19 +11,25 @@ public class FireFromItem : MonoBehaviour
     private bool isAdedItem;
 
     private float timer;
+    private ItemState state;
+    private int lustState;
 
     void Start()
     {
         timer = 0f;
         isAdedItem = false;
+        state = transform.GetComponent<ItemState>();
         CheckIsAddedItem();
         InitializeLevel();
     }
 
     void Update()
     {
-
-        if (enemy.GetComponent<WaveMovement>().levelDevenc <= level)
+        if (enemy.GetComponent<WaveMovement>().levelDevenc <= level && state.itemState != 3)
+        {
+            state.itemState = 3;
+        }
+        else if (enemy.GetComponent<WaveMovement>().levelDevenc <= level)
         {
             targetPosition = enemy.transform.position;
             timer += Time.deltaTime;
@@ -46,7 +51,9 @@ public class FireFromItem : MonoBehaviour
             
            if(gameobj.transform == transform.parent)
            {
+               transform.GetComponent<ItemState>().itemState = 1;
                isAdedItem = true; break;
+                
            }
             
         }
@@ -87,15 +94,19 @@ public class FireFromItem : MonoBehaviour
     }
     void SpawnSquare()
     {
-        // create a new square game object
+        // Create a new square game object
         GameObject square = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        square.transform.position = transform.position;
-        square.transform.localScale = new Vector3(10, 10, 0);
+        square.transform.position = transform.position; // Set the position of the square
+        square.transform.localScale = new Vector3(10, 10, 0); // Set the scale of the square
 
-        // add a script to move the square to the target position
+        _ = square.AddComponent<BulletState>();
+
+        // Add a script to move the square to the target position
         SquareMover mover = square.AddComponent<SquareMover>();
-        mover.targetPosition = targetPosition;
-        mover.duration = 5f;
+        mover.targetPosition = targetPosition; // Set the target position for the mover
+        mover.duration = 5f; // Set the duration for the movement
+
+        
 
     }
 }
@@ -124,7 +135,7 @@ public class SquareMover : MonoBehaviour
         if (t >= 1f)
         {
             // Remove the square game object
-            Destroy(gameObject);
+            gameObject.GetComponent<BulletState>().DestroyObject();
         }
     }
 }
