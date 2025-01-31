@@ -358,7 +358,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7247643895292567579, guid: 032a72cfc45569047a538913e5ea1311, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -485
+      value: -484.99997
       objectReference: {fileID: 0}
     - target: {fileID: 7247643895292567579, guid: 032a72cfc45569047a538913e5ea1311, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1243,7 +1243,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -117.149994, y: -22.283295}
+  m_AnchoredPosition: {x: -117.150024, y: -22.283295}
   m_SizeDelta: {x: 234.29, y: 43.5668}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &609022290
@@ -1974,6 +1974,7 @@ GameObject:
   - component: {fileID: 1040774346}
   - component: {fileID: 1040774349}
   - component: {fileID: 1040774348}
+  - component: {fileID: 1040774350}
   m_Layer: 0
   m_Name: Wave
   m_TagString: Untagged
@@ -2144,6 +2145,20 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1040774350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1040774344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9615eb1401617e4f9c1f890e76dfd43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 519420028}
+  startButton: {fileID: 609022290}
 --- !u!1 &1053436452
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ public class WebSocketManager
 {
     private WebSocketMetods webSocketMetods = new WebSocketMetods();
 
-    public void HandleMessage(string message, WaveMovement waveMovement)
+    public void HandleMessage(string message, Wave wave)
     {
         if (message == "item has been changed")
         {
@@ -17,10 +17,10 @@ public class WebSocketManager
             try
             {
                 WebSocketResponseWaveParams data = JsonConvert.DeserializeObject<WebSocketResponseWaveParams>(message);
-                if (data != null)
-                {
-                    webSocketMetods.UpdateWaveStatus(waveMovement, data.health, data.progress / 100f);
-                }
+                //if (data != null)
+                //{
+                //    webSocketMetods.UpdateWaveStatus(wave, data.health, data.progress / 100f);
+                //}
             }
             catch (Exception ex)
             {
