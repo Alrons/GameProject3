@@ -22,7 +22,7 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
     // get unity objects
     public GameObject dragObject; // item
     public ScrollRect scrollRect;
-    public GameObject sciptSpawnObject;
+    public GameObject mainCamera;
 
     DragDropProperties dragDropProperties = new DragDropProperties();
 
@@ -35,7 +35,7 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
     {
         
         //mainCamera = SciptSpawnObject.GetComponent<SpawnObject>();
-        refrash = sciptSpawnObject.GetComponent<Refrash>();
+        refrash = mainCamera.GetComponent<Refrash>();
         
         //for future
         //currency = coins.GetComponent<currency>();
@@ -59,7 +59,7 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
     {
         if (!dragDropProperties.DidTheFormSearchWork)
         {
-            TableCreator tableCreator = sciptSpawnObject.GetComponent<TableCreator>();
+            TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
             foreach (CellNumberModel cellClass in tableCreator.hashSetCellNumber)
             {
                 if (cellClass.cellNumber == Place)
@@ -110,7 +110,7 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         dragDropProperties.RecetTransform.anchoredPosition += eventData.delta;
     }
      
-    IEnumerator CantUseForm()
+    private IEnumerator CantUseForm()
     {
 
         dragDropProperties.Form.GetComponent<Image>().color = new Color(255f, 0f, 0f, 0.2f);
@@ -127,10 +127,14 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         {
             if (dragDropProperties.FormIsFull)
             {
+                if (mainCamera.GetComponent<Currency>().Purchase(this.Сurrency,Price))
+                {
                     ItemService itemService = new ItemService();
                     bool check = await itemService.PostAddedItem(new AddedItemsRequest(1, Title, Description, Price, Сurrency, Image, Place, Health, Power, XPower));
                     Refreshing(check);
                     Destroy(dragObject);
+                }
+                    
             }
         }
         dragDropProperties.Form.GetComponent<Image>().color = new Color(255f, 255f, 255f, 0.1f);
@@ -149,7 +153,7 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
             {
                 if (await refrash.RefreshPlaseforDrop())
                 {
-                    refrash.RefreshItemsInShop();
+                    await refrash.RefreshItemsInShop();
                 }
 
             }

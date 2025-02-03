@@ -1,7 +1,6 @@
 using Assets.scripts.Interface.Models;
 using System.Collections;
 using System.Threading.Tasks;
-using Unity.Properties;
 using UnityEngine;
 using UnityEngine.UI;
 
