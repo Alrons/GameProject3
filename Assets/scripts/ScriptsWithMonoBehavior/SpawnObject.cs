@@ -1,168 +1,179 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Newtonsoft.Json;
-using System;
 using UnityEngine.UI;
-
+using System.Linq;
 
 public class SpawnObject : MonoBehaviour
 {
-    public List<AddedItemModel> addedItemsList = new List<AddedItemModel>();
-    public List<ItemModel> allItems = new List<ItemModel>();
-    public List<TableDataModel> tableDataModel = new List<TableDataModel>();
+    public List<AddedItemModel> addedItemsList = new();
+    public List<ItemModel> allItems = new();
+    public List<TableDataModel> tableDataModel = new();
 
-    private int count;
-
-    public Text title;
-    public Text price;
-    public Text description;
-    public Text health;
-    public Text power;
-    public Text xPower;
-
+    public Text title, price, description, health, power, xPower;
     public GameObject box;
     public Transform canvasObject;
     public GameObject mainCamera;
 
     public bool isLoading = false;
 
-    async void Start()
+    private async void Start()
     {
-        ItemService ItemService = new ItemService();
+        var itemService = new ItemService();
 
-        addedItemsList = await ItemService.GetAddedItem();
+        addedItemsList = await itemService.GetAddedItem();
+        allItems = await itemService.GetItem();
+        tableDataModel = await itemService.GetOurTables();
 
-        allItems = await ItemService.GetItem();
+        if (addedItemsList == null || allItems == null || tableDataModel == null)
+        {
+            Debug.LogError("Îøèáêà çàãðóçêè äàííûõ! Ïðîâåðü API.");
+            return;
+        }
 
-        tableDataModel = await ItemService.GetOurTables();
-
-        Initializing();
+        Initialize();
     }
-    private void Initializing()
+
+
+    private void Initialize()
     {
+        InitializeTables();
+        InitializeAddedItems();
+        InitializeItems();
 
-        InitializingTable();
-        InitializingAddedItems();
-        InitializingItems();
-
-        Refrash refrash = mainCamera.GetComponent<Refrash>();
-        refrash.RefreshLinePower();
+        mainCamera.GetComponent<Refrash>().RefreshLinePower();
         isLoading = true;
     }
-    public GameObject CopyPref(GameObject box, Vector3 position, Transform setparent)
-    {
-        var spawn = Instantiate(box, position, Quaternion.identity);
-        spawn.transform.SetParent(setparent.transform);
-        spawn.transform.Rotate(0, 0, 0);
-        spawn.transform.localScale = new Vector3(1, 1, 1);
-        return spawn;
 
+    public GameObject CopyPref(GameObject prefab, Vector3 position, Transform parent)
+    {
+        if (prefab == null)
+        {
+            Debug.LogError("CopyPref: prefab is NULL!");
+            return null;
+        }
+
+        if (parent == null)
+        {
+            Debug.LogError("CopyPref: parent is NULL!");
+            return null;
+        }
+
+        GameObject instance = Instantiate(prefab, position, Quaternion.identity, parent);
+        instance.transform.localScale = Vector3.one;
+        return instance;
     }
-    private void ChangePref(string title, int price, string description, int health, double power, double xpower)
+
+    private void UpdateTextFields(string title, int price, string description, int health, double power, double xpower)
     {
         this.title.text = title;
-        this.price.text = string.Format("{0}", price);
+        this.price.text = price.ToString();
         this.description.text = description;
-        this.health.text = string.Format("{0}", health);
-        this.power.text = string.Format("{0}", power);
-        xPower.text = String.Format("{0}", xpower);
+        this.health.text = health.ToString();
+        this.power.text = power.ToString();
+        this.xPower.text = xpower.ToString();
     }
 
-    private void InitializingItems()
+    private void InitializeItems()
     {
-        for (int i = 0; i < allItems.Count; i++)
+        var tableCreator = mainCamera.GetComponent<TableCreator>();
+
+        foreach (var item in allItems)
         {
-            if (count != allItems.Count)
+            if (item.place > tableCreator.hashSetCellNumber.Count) continue;
+
+            UpdateTextFields(item.title, item.price, item.description, item.health, item.power, item.xPover);
+            GameObject gmItem = CopyPref(box, box.transform.position, canvasObject);
+
+            if (gmItem.TryGetComponent(out DragDrop dragDrop))
             {
-                TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
-                if (allItems[i].place <= tableCreator.hashSetCellNumber.Count)
-                {
-                    ChangePref(allItems[i].title, allItems[i].price, allItems[i].description, allItems[i].health, allItems[i].power, allItems[i].xPover);
-                    GameObject gmItem = CopyPref(box, box.transform.position, canvasObject);
-                    DragDrop dragDrop = gmItem.GetComponent<DragDrop>();
-                    dragDrop.Id = allItems[i].id;
-                    dragDrop.Title = allItems[i].title;
-                    dragDrop.Description = allItems[i].description;
-                    dragDrop.Price = allItems[i].price;
-                    dragDrop.Ñurrency = allItems[i].currency;
-                    dragDrop.Image = allItems[i].image;
-                    dragDrop.Place = allItems[i].place;
-                    dragDrop.Health = allItems[i].health;
-                    dragDrop.Power = allItems[i].power;
-                    dragDrop.XPower = allItems[i].xPover;
-                }
-
-            }
-
-        }
-    }
-    private void InitializingTable()
-    {
-        TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
-        foreach (TableDataModel Tables in tableDataModel)
-        {
-
-            tableCreator.CreateTable(Tables.Width, Tables.Height, new Vector3((float)Tables.PosX, (float)Tables.PosY), Tables.Rotate);
-        }
-
-    }
-    private int FindTableNumber(int NumberCell)
-    {
-        TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
-        foreach (CellNumberModel cellClass in tableCreator.hashSetCellNumber)
-        {
-            if (cellClass.cellNumber == NumberCell)
-            {
-                return cellClass.tableNumber;
+                dragDrop.Id = item.id;
+                dragDrop.Title = item.title;
+                dragDrop.Description = item.description;
+                dragDrop.Price = item.price;
+                dragDrop.Ñurrency = item.currency;
+                dragDrop.Image = item.image;
+                dragDrop.Place = item.place;
+                dragDrop.Health = item.health;
+                dragDrop.Power = item.power;
+                dragDrop.XPower = item.xPover;
             }
         }
+    }
+
+    private void InitializeTables()
+    {
+        var tableCreator = mainCamera.GetComponent<TableCreator>();
+
+        foreach (var table in tableDataModel)
+        {
+            tableCreator.CreateTable(table.Width, table.Height, new Vector3((float)table.PosX, (float)table.PosY), table.Rotate);
+        }
+    }
+
+    private int FindTableNumber(int cellNumber)
+    {
+        var tableCreator = mainCamera.GetComponent<TableCreator>();
+
+        foreach (var cell in tableCreator.hashSetCellNumber)
+        {
+            if (cell.cellNumber == cellNumber)
+                return cell.tableNumber;
+        }
+
         return -1;
     }
 
-    private void InitializingAddedItems()
+    private void InitializeAddedItems()
     {
+        var tableCreator = mainCamera.GetComponent<TableCreator>();
 
-        TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
-        int Count = 1;
-        foreach (CellNumberModel Cell in tableCreator.hashSetCellNumber)
+        foreach (var item in addedItemsList)
         {
-            GameObject gameobj = Cell.cell;
-            foreach (Transform children in gameobj.transform)
+            int place = item.place;
+
+            var cell = tableCreator.hashSetCellNumber.FirstOrDefault(c => c.cellNumber == place);
+
+            if (cell == null)
             {
-                Destroy(children.gameObject);
+                continue;
             }
 
-            for (int i = 0; i < addedItemsList.Count; i++)
+            foreach (Transform child in cell.cell.transform)
             {
-                if (addedItemsList[i].place == Count)
-                {
-                    title.text = addedItemsList[i].title;
-                    price.text = $"{addedItemsList[i].price}";
-                    description.text = addedItemsList[i].description;
-                    health.text = $"{addedItemsList[i].health}";
-                    power.text = $"{addedItemsList[i].power}";
-                    xPower.text = $"{addedItemsList[i].xPower}";
-                    GameObject newpref = CopyPref(box, gameobj.transform.position, gameobj.transform);
-                    DragDrop script = newpref.GetComponent<DragDrop>();
-                    script.ThisAddedItem = true;
-                    script.Id = addedItemsList[i].id;
-                    script.Title = addedItemsList[i].title;
-                    script.Description = addedItemsList[i].description;
-                    script.Price = addedItemsList[i].price;
-                    script.Ñurrency = addedItemsList[i].currency;
-                    script.Image = addedItemsList[i].image;
-                    script.Place = addedItemsList[i].place;
-                    script.Health = addedItemsList[i].health;
-                    script.Power = addedItemsList[i].power;
-                    script.XPower = addedItemsList[i].xPower;
-                    newpref.transform.Rotate(0, 0, (float)tableDataModel[FindTableNumber(Count) - 1].Rotate);
-
-                    break;
-                }
-
+                Destroy(child.gameObject);
             }
-            Count++;
 
+            UpdateTextFields(item.title, item.price, item.description, item.health, item.power, item.xPower); 
+            GameObject newPrefab = CopyPref(box, cell.cell.transform.position, cell.cell.transform);
+
+            if (newPrefab == null)
+            {
+                Debug.LogError($"InitializeAddedItems: Failed to instantiate prefab for place {place}");
+                return;
+            }
+
+            if (newPrefab.TryGetComponent(out DragDrop script))
+            {
+                script.ThisAddedItem = true;
+                script.Id = item.id;
+                script.Title = item.title;
+                script.Description = item.description;
+                script.Price = item.price;
+                script.Ñurrency = item.currency;
+                script.Image = item.image;
+                script.Place = item.place;
+                script.Health = item.health;
+                script.Power = item.power;
+                script.XPower = item.xPower; 
+            }
+
+            int tableIndex = FindTableNumber(place) - 1;
+            if (tableIndex >= 0 && tableIndex < tableDataModel.Count)
+            {
+                newPrefab.transform.Rotate(0, 0, (float)tableDataModel[tableIndex].Rotate);
+            }
         }
     }
+
+
 }

@@ -1,17 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class FireFromItem : MonoBehaviour
 {
     public int level;
     public Vector3 targetPosition;
-    public float spawnInterval = 1f; // adjust this value to change the spawn interval
+    public float spawnInterval = 1f;
     public GameObject enemy;
     public GameObject mainCamera;
     private bool isAdedItem;
-
     private float timer;
+    private float damagePerBullet;
 
     void Start()
     {
@@ -19,36 +17,41 @@ public class FireFromItem : MonoBehaviour
         isAdedItem = false;
         CheckIsAddedItem();
         InitializeLevel();
+        CalculateBulletDamage();
     }
 
     void Update()
     {
-
-        if (enemy.GetComponent<WaveMovement>().levelDevenc <= level)
+        if (enemy.GetComponent<Wave>().levelDevenc <= level)
         {
             targetPosition = enemy.transform.position;
             timer += Time.deltaTime;
             if (timer >= spawnInterval)
             {
+                CalculateBulletDamage();
                 SpawnSquare();
                 timer = 0f;
             }
         }
-
     }
+
+    private void CalculateBulletDamage()
+    {
+        float power = transform.GetComponent<DragDrop>().Power;
+        damagePerBullet = power * spawnInterval;
+    }
+
     private void CheckIsAddedItem()
     {
         TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
-        int Count = 1;
         foreach (CellNumberModel Cell in tableCreator.hashSetCellNumber)
         {
             GameObject gameobj = Cell.cell;
-            
-           if(gameobj.transform == transform.parent)
-           {
-               isAdedItem = true; break;
-           }
-            
+            if (gameobj.transform == transform.parent)
+            {
+                isAdedItem = true;
+                break;
+            }
         }
     }
 
@@ -64,39 +67,33 @@ public class FireFromItem : MonoBehaviour
         }
         return -1;
     }
+
     public void InitializeLevel()
     {
         if (isAdedItem)
         {
             int place = transform.GetComponent<DragDrop>().Place;
-
             switch (FindTableNumber(place))
             {
-                case 1:
-                    level = 4; break;
-                case 2:
-                    level = 3; break;
-                case 3:
-                    level = 2; break;
-                case 4:
-                    level = 1; break;
-
+                case 1: level = 4; break;
+                case 2: level = 3; break;
+                case 3: level = 2; break;
+                case 4: level = 1; break;
             }
         }
-        
     }
+
     void SpawnSquare()
     {
-        // create a new square game object
         GameObject square = GameObject.CreatePrimitive(PrimitiveType.Cube);
         square.transform.position = transform.position;
         square.transform.localScale = new Vector3(10, 10, 0);
 
-        // add a script to move the square to the target position
         SquareMover mover = square.AddComponent<SquareMover>();
         mover.targetPosition = targetPosition;
         mover.duration = 5f;
-
+        mover.enemyWave = enemy.GetComponent<Wave>();
+        mover.damage = damagePerBullet;
     }
 }
 
@@ -104,6 +101,8 @@ public class SquareMover : MonoBehaviour
 {
     public Vector3 targetPosition;
     public float duration;
+    public Wave enemyWave;
+    public float damage;
 
     private Vector3 startPosition;
     private float timer;
@@ -120,10 +119,12 @@ public class SquareMover : MonoBehaviour
         float t = timer / duration;
         transform.position = Vector3.Lerp(startPosition, targetPosition, t);
 
-        // Check if the square has reached the target position
         if (t >= 1f)
         {
-            // Remove the square game object
+            if (enemyWave != null)
+            {
+                enemyWave.GetDamage(damage);
+            }
             Destroy(gameObject);
         }
     }

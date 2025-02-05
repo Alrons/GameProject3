@@ -20,12 +20,6 @@ public class Waves
 
     public int WaveHealth { get; set; }
 
-    public int HealthLevel1 { get; set; }
-
-    public int HealthLevel2 { get; set; }
-
-    public int HealthLevel3 { get; set; }
-
     public int Status { get; set; }
 
     public Waves (int id, int userID, int wavesNumber, int durationInSeconds, int wavesPower, DateTime startWave, double passing, double waveEnd, int waveHealth, int healthLevel1, int healthLevel2, int healthLevel3, int status) 
@@ -39,9 +33,6 @@ public class Waves
         Passing = passing;
         WaveEnd = waveEnd;
         WaveHealth = waveHealth;
-        HealthLevel1 = healthLevel1;
-        HealthLevel2 = healthLevel2;
-        HealthLevel3 = healthLevel3;
         Status = status;
     }
 }

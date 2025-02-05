@@ -13,8 +13,8 @@ public class WebSocketMetods : MonoBehaviour
             await refrash.RefreshItemsInShop();
         }
     }
-    public void UpdateWaveStatus(WaveMovement waveMovement, float health, float progress)
-    {
-        waveMovement.UpdateWaveData(health, progress);
-    }
+    //public void UpdateWaveStatus(WaveMovement waveMovement, float health, float progress)
+    //{
+    //    waveMovement.UpdateWaveData(health, progress);
+    //}
 }

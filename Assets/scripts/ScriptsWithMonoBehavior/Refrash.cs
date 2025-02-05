@@ -104,7 +104,7 @@ public class Refrash : MonoBehaviour
                         health.text = $"{spawnObject.addedItemsList[i].health}";
                         power.text = $"{spawnObject.addedItemsList[i].power}";
                         xPower.text = $"{spawnObject.addedItemsList[i].xPower}";
-                        GameObject _object = spawnObject.CopyPref(prefabObject, gameobj.transform.position, gameobj.transform);
+                        GameObject _object = spawnObject.CopyPref(prefabObject, gameobj.transform.position,gameobj.transform);
                         DragDrop script = _object.GetComponent<DragDrop>();
                         script.ThisAddedItem = true;
                         script.Id = spawnObject.addedItemsList[i].id;
