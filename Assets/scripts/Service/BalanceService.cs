@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class BalanceService
 {
-    private readonly BalanceServiceProperties _currencyServiceProperties = new BalanceServiceProperties();
+    private readonly BalanceServiceProperties _balanceServiceProperties = new BalanceServiceProperties();
 
     public async Task<BalanceResponse> GetBalance()
     {
@@ -16,11 +16,11 @@ public class BalanceService
 
             for (int i = 0; i < 2; i++)
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, _currencyServiceProperties.baseUrl);
+                var request = new HttpRequestMessage(HttpMethod.Get, _balanceServiceProperties.baseUrl);
                 request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _currencyServiceProperties.ApiKey);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _balanceServiceProperties.ApiKey);
 
-                response = await _currencyServiceProperties.HttpClient.SendAsync(request);
+                response = await _balanceServiceProperties.HttpClient.SendAsync(request);
 
                 if (response.IsSuccessStatusCode)
                 {
