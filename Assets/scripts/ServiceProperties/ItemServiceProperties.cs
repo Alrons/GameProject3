@@ -6,30 +6,20 @@ using UnityEngine;
 
 public class ItemServiceProperties
 {
-    // Use a constant for the base URL
     public readonly string baseUrl = "https://localhost:7075/api/";
 
-    // Use a readonly field for the HTTP client
-    public HttpClient HttpClient { get; set; }
-
-    // Use a readonly field for the URL
     public string AddedItems { get; set; }
-
     public string Items { get; set; }
-
     public string Tables { get; set; }
-
     public int UserId { get; set; }
+    public string ApiKey { get; set; }
 
     public ItemServiceProperties()
     {
-        // Initialize the HTTP client
-        HttpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
-
-        // Initialize the URL
         AddedItems = "AddedItems/";
         Items = "Items/";
         Tables = "Tables/";
         UserId = 1;
+        ApiKey = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdSIsImV4cCI6MTc0MTMzMzAwMSwicm9sZXMiOlsiUExBWUVSIiwiTUVOVE9SIiwiR0FNRV9ESVoiLCJNRVRIT0RJU1QiLCJBRE1JTklTVFJBVE9SIl0sInVzZXJJZCI6IjQxZWI1MWI2LTQ5YTktNGZiMi04Nzg1LWNkNzc0ZDA3ZDYyMiJ9.9nVZ7M2sPx1VdltUDAZ2ebi9WGATwWUIZloZSD8SI5s";
     }
 }

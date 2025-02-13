@@ -3,40 +3,36 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class BalanceService
+public class BalanceService : IBalanceService
 {
     private readonly BalanceServiceProperties _balanceServiceProperties = new BalanceServiceProperties();
 
     public async Task<BalanceResponse> GetBalance()
     {
-        try
-        {
-            HttpResponseMessage response = null;
+        string url = _balanceServiceProperties.baseUrl;
+        string apiKey = _balanceServiceProperties.ApiKey;
 
-            for (int i = 0; i < 2; i++)
+        using (UnityWebRequest request = UnityWebRequest.Get(url))
+        {
+            request.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+            request.SetRequestHeader("Accept", "*/*");
+
+            var operation = request.SendWebRequest();
+
+            while (!operation.isDone)
+                await Task.Yield(); // Ждем завершения запроса
+
+            if (request.result == UnityWebRequest.Result.Success)
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, _balanceServiceProperties.baseUrl);
-                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _balanceServiceProperties.ApiKey);
-
-                response = await _balanceServiceProperties.HttpClient.SendAsync(request);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    break;
-                }
+                return JsonConvert.DeserializeObject<BalanceResponse>(request.downloadHandler.text);
             }
-
-            response.EnsureSuccessStatusCode();
-
-            string result = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<BalanceResponse>(result);
-        }
-        catch (HttpRequestException ex)
-        {
-            Debug.LogError($"Error getting balance: {ex.Message}");
-            throw;
+            else
+            {
+                Debug.LogError($"Error getting balance: {request.error}");
+                throw new System.Exception($"Request failed: {request.error}");
+            }
         }
     }
 }

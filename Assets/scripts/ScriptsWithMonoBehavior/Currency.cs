@@ -17,13 +17,17 @@ public class Currency : MonoBehaviour
     public Image Image;
     public Text textCurrencyValues;
 
-    private CurrencyService currencyService;
-    private BalanceService balanceService;
+    private ICurrencyService currencyService;
+    private IBalanceService balanceService;
 
     private async void Start()
     {
-        currencyService = new CurrencyService();
-        balanceService = new BalanceService();
+        // currencyService = new CurrencyService();
+        // balanceService = new BalanceService();
+
+        currencyService = new MockCurrencyService(); 
+        balanceService = new MockBalanceService(); 
+
         await LoadCurrencies();
     }
 

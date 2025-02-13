@@ -3,40 +3,36 @@ using System.Net.Http.Headers;
 using System.Net.Http;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class CurrencyService
+public class CurrencyService: ICurrencyService
 {
     private readonly CurrencyServiceProperties _currencyServiceProperties = new CurrencyServiceProperties();
 
     public async Task<CurrencyResponse> GetCurrency()
     {
-        try
-        {
-            HttpResponseMessage response = null;
+        string url = _currencyServiceProperties.baseUrl;
+        string apiKey = _currencyServiceProperties.ApiKey;
 
-            for (int i = 0; i < 2; i++)
+        using (UnityWebRequest request = UnityWebRequest.Get(url))
+        {
+            request.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+            request.SetRequestHeader("Accept", "*/*");
+
+            var operation = request.SendWebRequest();
+
+            while (!operation.isDone)
+                await Task.Yield(); // Ждем завершения запроса
+
+            if (request.result == UnityWebRequest.Result.Success)
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, $"{_currencyServiceProperties.baseUrl}");
-                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _currencyServiceProperties.ApiKey);
-
-                response = await _currencyServiceProperties.HttpClient.SendAsync(request);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    break;
-                }
+                return JsonConvert.DeserializeObject<CurrencyResponse>(request.downloadHandler.text);
             }
-
-            response.EnsureSuccessStatusCode();
-
-            string result = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<CurrencyResponse>(result);
-        }
-        catch (HttpRequestException ex)
-        {
-            Debug.LogError($"Error getting currency: {ex.Message}");
-            throw;
+            else
+            {
+                Debug.LogError($"Error getting currency: {request.error}");
+                throw new System.Exception($"Request failed: {request.error}");
+            }
         }
     }
 }
