@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading.Tasks;
 
 public class Currency : MonoBehaviour
 {
-    Dictionary<int, KeyValuePair<string, double>> currencyDictionary = new Dictionary<int, KeyValuePair<string, double>>();
-
+    Dictionary<int, CurrencyData> currencyDictionary = new Dictionary<int, CurrencyData>();
     Dictionary<int, GameObject> createdCurrencies = new Dictionary<int, GameObject>();
 
     public GameObject mainCamera;
@@ -17,23 +17,49 @@ public class Currency : MonoBehaviour
     public Image Image;
     public Text textCurrencyValues;
 
-    private BalanceService balanceService;
+    private ICurrencyService currencyService;
+    private IBalanceService balanceService;
 
-    private void Start()
+    private async void Start()
     {
-        //currencyDictionary[0] = new KeyValuePair<string, double>("path to image for currency1", 100.0);
-        //currencyDictionary[1] = new KeyValuePair<string, double>("path to image for currency2", 100.0);
-        //currencyDictionary[2] = new KeyValuePair<string, double>("path to image for currency3", 100.0);
-        balanceService = new BalanceService();
-        GetBalance();
+        // currencyService = new CurrencyService();
+        // balanceService = new BalanceService();
+
+        currencyService = new MockCurrencyService(); 
+        balanceService = new MockBalanceService(); 
+
+        await LoadCurrencies();
     }
 
-    private async void GetBalance()
+    private async Task LoadCurrencies()
+    {
+        try
+        {
+            var currencyResponse = await currencyService.GetCurrency();
+            if (currencyResponse?.Data == null)
+            {
+                Debug.LogWarning("Currency response is null or empty.");
+                return;
+            }
+
+            foreach (var currency in currencyResponse.Data)
+            {
+                currencyDictionary[currency.Id] = currency;
+            }
+
+            await LoadBalances();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error loading currencies: {ex.Message}");
+        }
+    }
+
+    private async Task LoadBalances()
     {
         try
         {
             var balanceResponse = await balanceService.GetBalance();
-
             if (balanceResponse?.Data?.BalanceList == null)
             {
                 Debug.LogWarning("Balance response or data is null.");
@@ -42,39 +68,28 @@ public class Currency : MonoBehaviour
 
             foreach (var balanceEntry in balanceResponse.Data.BalanceList)
             {
-                if (int.TryParse(balanceEntry.Key, out int currencyKey))
+                if (int.TryParse(balanceEntry.Key, out int currencyKey) && currencyDictionary.TryGetValue(currencyKey, out var currency))
                 {
-                    currencyDictionary[currencyKey] = new KeyValuePair<string, double>(
-                        currencyDictionary.TryGetValue(currencyKey, out var existingPair)
-                            ? existingPair.Key
-                            : "default_path",
-                        balanceEntry.Value
-                    );
-                }
-                else
-                {
-                    Debug.LogWarning($"Invalid currency key format: {balanceEntry.Key}");
+                    currency.BalanceCurrency = balanceEntry.Value;
                 }
             }
 
-            InitializedCurrency();
+            InitializeCurrencies();
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Error getting balance: {ex.Message}");
+            Debug.LogError($"Error loading balances: {ex.Message}");
         }
     }
 
-    private void InitializedCurrency()
+    private void InitializeCurrencies()
     {
         createdCurrencies.Clear();
-
         float positionOffsetX = 0.3f;
 
         foreach (var currencyPair in currencyDictionary)
         {
             GameObject currencyObject = CopyPref(pref, canvas);
-
             currencyObject.transform.localScale = new Vector3(0.26f, 0.975f, 1f);
 
             RectTransform rectTransform = currencyObject.GetComponent<RectTransform>();
@@ -84,8 +99,8 @@ public class Currency : MonoBehaviour
             Image currencyImage = currencyObject.GetComponentInChildren<Image>();
             Text currencyText = currencyObject.GetComponentInChildren<Text>();
 
-            currencyImage.sprite = Resources.Load<Sprite>(currencyPair.Value.Key);
-            currencyText.text = currencyPair.Value.Value.ToString("F2");
+            currencyImage.sprite = Resources.Load<Sprite>(currencyPair.Value.CurrencyType);
+            currencyText.text = currencyPair.Value.BalanceCurrency.ToString("F2");
 
             createdCurrencies[currencyPair.Key] = currencyObject;
         }
@@ -93,55 +108,37 @@ public class Currency : MonoBehaviour
 
     private void ReloadCurrency(int currency)
     {
-        if (createdCurrencies.TryGetValue(currency, out var currencyObject))
+        if (createdCurrencies.TryGetValue(currency, out var currencyObject) && currencyDictionary.TryGetValue(currency, out var currencyData))
         {
-            Image currencyImage = currencyObject.GetComponentInChildren<Image>();
             Text currencyText = currencyObject.GetComponentInChildren<Text>();
-
-            currencyText.text = currencyDictionary[currency].Value.ToString("F2");
-            currencyImage.sprite = Resources.Load<Sprite>(currencyDictionary[currency].Key);
+            currencyText.text = currencyData.BalanceCurrency.ToString("F2");
         }
     }
 
     public bool Purchase(int currency, double price)
     {
-        if (currencyDictionary.TryGetValue(currency, out var currencyPair))
+        if (currencyDictionary.TryGetValue(currency, out var currencyData) && currencyData.BalanceCurrency >= price)
         {
-            if (currencyPair.Value >= price)
-            {
-                double newAmount = currencyPair.Value - price;
-                currencyDictionary[currency] = new KeyValuePair<string, double>(currencyPair.Key, newAmount);
-                ReloadCurrency(currency);
-                return true;
-            }
-            else
-            {
-                Debug.Log("Not enough funds for the purchase.");
-                return false;
-            }
-        }
-        else
-        {
-            Debug.Log("Currency not found.");
-            return false;
-        }
-    }
-
-
-    public bool Sale(int currency, double price)
-    {
-        if (currencyDictionary.TryGetValue(currency, out var currencyPair))
-        {
-            double newAmount = currencyPair.Value + (price * GameConst.SellReturn);
-            currencyDictionary[currency] = new KeyValuePair<string, double>(currencyPair.Key, newAmount);
+            currencyData.BalanceCurrency -= price;
             ReloadCurrency(currency);
             return true;
         }
-        else
+
+        Debug.Log("Not enough funds for the purchase.");
+        return false;
+    }
+
+    public bool Sale(int currency, double price)
+    {
+        if (currencyDictionary.TryGetValue(currency, out var currencyData))
         {
-            Debug.Log("Currency not found.");
-            return false;
+            currencyData.BalanceCurrency += price * GameConst.SellReturn;
+            ReloadCurrency(currency);
+            return true;
         }
+
+        Debug.Log("Currency not found.");
+        return false;
     }
 
     private GameObject CopyPref(GameObject Prefub, Transform setparent)

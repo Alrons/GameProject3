@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
 
 
 public class WavesService : IWavesService
@@ -12,81 +13,75 @@ public class WavesService : IWavesService
 
     public async Task<StartWavePosition> GetWaveStartPos()
     {
-        try
-        {
-            HttpResponseMessage response = null;
-
-            // Retry the request up to 2 times if necessary
-            for (int i = 0; i < 2; i++)
-            {
-                response = await _wavesServiceProperties.HttpClient.GetAsync($"{_wavesServiceProperties.StartWavePos}");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    break; // Break if request is successful
-                }
-
-            }
-
-            // Ensure the response was successful before proceeding
-            response.EnsureSuccessStatusCode();
-
-            string result = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<BaseResponse<StartWavePosition>>(result).Result; 
-        }
-        catch (HttpRequestException ex)
-        {
-            Debug.LogError($"Error getting: {ex.Message}");
-            throw; // re-throw the exception
-        }
+        string url = $"{_wavesServiceProperties.baseUrl}{_wavesServiceProperties.StartWavePos}";
+        return await SendGetRequest<StartWavePosition>(url);
     }
+
     public async Task<Waves> GetWave()
     {
-        try
-        {
-            HttpResponseMessage response = null;
-
-            // Retry the request up to 2 times if necessary
-            for (int i = 0; i < 2; i++)
-            {
-                response = await _wavesServiceProperties.HttpClient.GetAsync($"{_wavesServiceProperties.Wave}{UserConst.userId}");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    break; // Break if request is successful
-                }
-
-            }
-
-            // Ensure the response was successful before proceeding
-            response.EnsureSuccessStatusCode();
-
-            string result = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<BaseResponse<Waves>>(result).Result;
-        }
-        catch (HttpRequestException ex)
-        {
-            Debug.LogError($"Error getting: {ex.Message}");
-            throw; // re-throw the exception
-        }
+        string url = $"{_wavesServiceProperties.baseUrl}{_wavesServiceProperties.Wave}{UserConst.userId}";
+        return await SendGetRequest<Waves>(url);
     }
+
     public async Task<bool> PostWaveStatus(WaveStatusModel model)
     {
-        try
+        string url = $"{_wavesServiceProperties.baseUrl}{_wavesServiceProperties.Wave}";
+        return await SendPostRequest(url, model);
+    }
+
+    private async Task<T> SendGetRequest<T>(string url)
+    {
+        string apiKey = _wavesServiceProperties.ApiKey;
+
+        using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
-            string json = JsonConvert.SerializeObject(model, Formatting.Indented);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            request.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+            request.SetRequestHeader("Accept", "*/*");
 
-            var response = await _wavesServiceProperties.HttpClient.PostAsync($"{_wavesServiceProperties.Wave}", content);
+            var operation = request.SendWebRequest();
+            while (!operation.isDone)
+                await Task.Yield();
 
-            response.EnsureSuccessStatusCode(); // Ensure the response was successful
-
-            return true;
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                return JsonConvert.DeserializeObject<BaseResponse<T>>(request.downloadHandler.text).Result;
+            }
+            else
+            {
+                Debug.LogError($"Error getting data from {url}: {request.error}");
+                throw new System.Exception($"Request failed: {request.error}");
+            }
         }
-        catch (HttpRequestException ex)
+    }
+
+    private async Task<bool> SendPostRequest<T>(string url, T model)
+    {
+        string json = JsonConvert.SerializeObject(model, Formatting.Indented);
+        byte[] jsonBytes = Encoding.UTF8.GetBytes(json);
+        string apiKey = _wavesServiceProperties.ApiKey;
+
+        using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
         {
-            Debug.LogError("Error: " + ex.Message);
-            throw;
+            request.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+            request.SetRequestHeader("Accept", "*/*");
+
+            request.uploadHandler = new UploadHandlerRaw(jsonBytes);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            var operation = request.SendWebRequest();
+            while (!operation.isDone)
+                await Task.Yield();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                return true;
+            }
+            else
+            {
+                Debug.LogError($"Error posting data to {url}: {request.error}");
+                return false;
+            }
         }
     }
 }

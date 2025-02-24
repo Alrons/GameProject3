@@ -1,18 +1,18 @@
-﻿using System.Net.Http;
+﻿using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class BalanceService : IBalanceService
+public class CurrencyService: ICurrencyService
 {
-    private readonly BalanceServiceProperties _balanceServiceProperties = new BalanceServiceProperties();
+    private readonly CurrencyServiceProperties _currencyServiceProperties = new CurrencyServiceProperties();
 
-    public async Task<BalanceResponse> GetBalance()
+    public async Task<CurrencyResponse> GetCurrency()
     {
-        string url = _balanceServiceProperties.baseUrl;
-        string apiKey = _balanceServiceProperties.ApiKey;
+        string url = _currencyServiceProperties.baseUrl;
+        string apiKey = _currencyServiceProperties.ApiKey;
 
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
@@ -26,11 +26,11 @@ public class BalanceService : IBalanceService
 
             if (request.result == UnityWebRequest.Result.Success)
             {
-                return JsonConvert.DeserializeObject<BalanceResponse>(request.downloadHandler.text);
+                return JsonConvert.DeserializeObject<CurrencyResponse>(request.downloadHandler.text);
             }
             else
             {
-                Debug.LogError($"Error getting balance: {request.error}");
+                Debug.LogError($"Error getting currency: {request.error}");
                 throw new System.Exception($"Request failed: {request.error}");
             }
         }

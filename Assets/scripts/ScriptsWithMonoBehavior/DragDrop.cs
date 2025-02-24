@@ -80,7 +80,6 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
     {
         if (collision.gameObject == dragDropProperties.Form)
         {
-            Debug.Log("collision: works");
             dragDropProperties.PosNow = true;
         }
     }

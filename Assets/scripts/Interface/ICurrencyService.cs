@@ -4,5 +4,5 @@ using System.Threading.Tasks;
 
 public interface ICurrencyService
 {
-    Task<List<BalanceList>> GetBalances();
+    Task<CurrencyResponse> GetCurrency();
 }
