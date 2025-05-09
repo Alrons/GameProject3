@@ -75,7 +75,7 @@ public class Wave : MonoBehaviour
         WaveEnd = wave.WaveEnd;
         WaveHealth = wave.WaveHealth;
         MaxWaveHealth = wave.WaveHealth;
-        levelDevenc = 5;
+        levelDevenc = 6;
 
         isMove = false;
         ShowWaveHealth();
@@ -129,11 +129,15 @@ public class Wave : MonoBehaviour
             float fractionOfJourney = Mathf.Clamp01((Time.time - startTime) / WaveDurationInSeconds);
             transform.position = Vector3.Lerp(startPos, endPos, fractionOfJourney);
 
-            if (fractionOfJourney <= 0.33f)
+            if (fractionOfJourney <= 0.25f)
+            {
+                levelDevenc = 5;
+            }
+            else if (fractionOfJourney <= 0.5f)
             {
                 levelDevenc = 4;
             }
-            else if (fractionOfJourney <= 0.66f)
+            else if (fractionOfJourney <= 0.75f)
             {
                 levelDevenc = 3;
             }

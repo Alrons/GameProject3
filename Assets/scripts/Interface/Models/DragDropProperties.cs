@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 public class DragDropProperties
 {
     public RectTransform RecetTransform { get; set; }
 
     public Vector2 StartPos { get; set; } // the starting position, for this position, the item will be returned if it does not get into the form
 
-    public GameObject Form { get; set; }// the general variable to which we will assign the physical location (into which the item is inserted)
+    public List<CellNumberModel> Form { get; set; }
 
     public bool PosNow { get; set; }
 
@@ -13,9 +14,13 @@ public class DragDropProperties
 
     public bool DidTheFormSearchWork { get; set; }
 
+    public bool IsOnEndDrag { get; set; }
+
     public DragDropProperties()
     {
+        Form = new List<CellNumberModel>();
         DidTheFormSearchWork = false;
+        IsOnEndDrag = false;
     }
 }
 

@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using Assets.scripts.Service;
+using Assets.scripts.Interface.Models;
 
 public class SpawnObject : MonoBehaviour
 {
     public List<AddedItemModel> addedItemsList = new();
     public List<ItemModel> allItems = new();
-    public List<TableDataModel> tableDataModel = new();
+    public List<TableDto> tableDataModel = new();
 
     public Text title, price, description, health, power, xPower;
     public GameObject box;
@@ -19,10 +21,11 @@ public class SpawnObject : MonoBehaviour
     private async void Start()
     {
         var itemService = new ItemService();
-
+        TablesService tablesService = new TablesService();
         addedItemsList = await itemService.GetAddedItem();
         allItems = await itemService.GetItem();
-        tableDataModel = await itemService.GetOurTables();
+        tableDataModel = await tablesService.GetTablesAsync();
+
 
         if (addedItemsList == null || allItems == null || tableDataModel == null)
         {
@@ -44,6 +47,52 @@ public class SpawnObject : MonoBehaviour
         isLoading = true;
     }
 
+    public GameObject CopyPref(GameObject prefab, Vector3 position, Transform parent, Vector2 targetCellSize = default)
+    {
+        if (prefab == null)
+        {
+            Debug.LogError("CopyPref: prefab is NULL!");
+            return null;
+        }
+
+        if (parent == null)
+        {
+            Debug.LogError("CopyPref: parent is NULL!");
+            return null;
+        }
+
+        GameObject instance = Instantiate(prefab, Vector3.zero, Quaternion.identity, parent);
+        
+        RectTransform rt = instance.GetComponent<RectTransform>();
+        if (rt != null)
+        {
+            
+            rt.localPosition = position;
+            Vector2 originalSize = rt.rect.size;
+            
+
+            if (originalSize.x == 0 || originalSize.y == 0)
+            {
+                Debug.LogWarning("CopyPref: RectTransform имеет нулевой размер.");
+            }
+            else
+            {
+                float scaleX = targetCellSize.x / originalSize.x;
+                float scaleY = targetCellSize.y / originalSize.y;
+
+                float uniformScale = Mathf.Min(scaleX, scaleY);
+
+                instance.transform.localScale = new Vector3(uniformScale, uniformScale, 1f);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("CopyPref: объект не содержит RectTransform — масштаб не изменён.");
+        }
+
+        return instance;
+    }
+
     public GameObject CopyPref(GameObject prefab, Vector3 position, Transform parent)
     {
         if (prefab == null)
@@ -58,7 +107,7 @@ public class SpawnObject : MonoBehaviour
             return null;
         }
 
-        GameObject instance = Instantiate(prefab, position, Quaternion.identity, parent);
+        GameObject instance = Instantiate(prefab, Vector3.zero, Quaternion.identity, parent);
         instance.transform.localScale = Vector3.one;
         return instance;
     }
@@ -93,6 +142,7 @@ public class SpawnObject : MonoBehaviour
                 dragDrop.Сurrency = item.currency;
                 dragDrop.Image = item.image;
                 dragDrop.Place = item.place;
+                dragDrop.Group = item.group;
                 dragDrop.Health = item.health;
                 dragDrop.Power = item.power;
                 dragDrop.XPower = item.xPover;
@@ -106,7 +156,7 @@ public class SpawnObject : MonoBehaviour
 
         foreach (var table in tableDataModel)
         {
-            tableCreator.CreateTable(table.Width, table.Height, new Vector3((float)table.PosX, (float)table.PosY), table.Rotate);
+            tableCreator.CreateTable(table);
         }
     }
 
@@ -144,7 +194,7 @@ public class SpawnObject : MonoBehaviour
             }
 
             UpdateTextFields(item.title, item.price, item.description, item.health, item.power, item.xPower); 
-            GameObject newPrefab = CopyPref(box, cell.cell.transform.position, cell.cell.transform);
+            GameObject newPrefab = CopyPref(box, Vector3.zero, cell.cell.transform, new Vector2( cell.cellSize.Width, cell.cellSize.Height));
 
             if (newPrefab == null)
             {
@@ -154,7 +204,7 @@ public class SpawnObject : MonoBehaviour
 
             if (newPrefab.TryGetComponent(out DragDrop script))
             {
-                script.ThisAddedItem = true;
+                script.IsAddedItem = true;
                 script.Id = item.id;
                 script.Title = item.title;
                 script.Description = item.description;
@@ -162,6 +212,7 @@ public class SpawnObject : MonoBehaviour
                 script.Сurrency = item.currency;
                 script.Image = item.image;
                 script.Place = item.place;
+                script.Group = item.group;
                 script.Health = item.health;
                 script.Power = item.power;
                 script.XPower = item.xPower; 
@@ -173,6 +224,7 @@ public class SpawnObject : MonoBehaviour
                 newPrefab.transform.Rotate(0, 0, (float)tableDataModel[tableIndex].Rotate);
             }
         }
+
     }
 
 

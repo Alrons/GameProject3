@@ -16,7 +16,7 @@ public class ForDelete : MonoBehaviour, IPointerClickHandler
 
     public async void OnPointerClick(PointerEventData eventData)
     {
-        if (dragDropScript.ThisAddedItem)
+        if (dragDropScript.IsAddedItem)
         {
             ItemService ItemService = new ItemService();
 
@@ -25,19 +25,19 @@ public class ForDelete : MonoBehaviour, IPointerClickHandler
 
             bool Cheak = await ItemService.PostItem(new ItemRequest(
                 1, dragDropScript.Title, dragDropScript.Description, dragDropScript.Price,
-                dragDropScript.Сurrency, dragDropScript.Image, dragDropScript.Place,
+                dragDropScript.Сurrency, dragDropScript.Image, dragDropScript.Place, dragDropScript.Group,
                 dragDropScript.Health, dragDropScript.Power, dragDropScript.XPower
             ));
 
             mainCamera.GetComponent<Currency>().Sale(dragDropScript.Сurrency, dragDropScript.Price);
-
+            Destroy(gameObjects);
             if (Cheak)
             {
                 await refrash.RefreshItemsInShop();
-                refrash.RefreshLinePower();
             }
 
-            Destroy(gameObjects);
+            
+
         }
     }
 }

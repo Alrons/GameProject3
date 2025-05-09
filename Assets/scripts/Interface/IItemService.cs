@@ -6,8 +6,6 @@ public interface IItemService
 
     Task<List<AddedItemModel>> GetAddedItem();
 
-    Task<List<TableDataModel>> GetOurTables();
-
     Task<bool> PostItem(ItemRequest model);
 
     Task<bool> PostAddedItem(AddedItemsRequest model);

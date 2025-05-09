@@ -14,13 +14,15 @@
 
     public int place;
 
+    public string group;
+
     public int health;
 
     public int power;
 
     public int xPover;
 
-    public AddedItemsRequest(int userId, string title, string description, int price, int currency, string image, int place, int health, int power, int xPover)
+    public AddedItemsRequest(int userId, string title, string description, int price, int currency, string image, int place, string group, int health, int power, int xPover)
     {
         this.userId = userId;
         this.title = title;
@@ -29,6 +31,7 @@
         this.currency = currency;
         this.image = image;
         this.place = place;
+        this.group = group;
         this.health = health;
         this.power = power;
         this.xPover = xPover;
