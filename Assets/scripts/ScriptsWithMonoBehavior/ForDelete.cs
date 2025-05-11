@@ -33,7 +33,10 @@ public class ForDelete : MonoBehaviour, IPointerClickHandler
 
             if (Cheak)
             {
-                await refrash.RefreshItemsInShop();
+                if (await refrash.RefreshPlaseforDrop())
+                {
+                    await refrash.RefreshItemsInShop();
+                }
                 refrash.RefreshLinePower();
             }
 

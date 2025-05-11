@@ -12,9 +12,9 @@ public class MockBalanceService: IBalanceService
             {
                 BalanceList = new Dictionary<string, double>
                 {
-                    { "1", 1000 },
-                    { "2", 500 },
-                    { "3", 2000 }
+                    { "0", 1000 },
+                    { "1", 500 },
+                    { "2", 2000 }
                 }
             }
         };

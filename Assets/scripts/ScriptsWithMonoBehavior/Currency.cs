@@ -22,11 +22,11 @@ public class Currency : MonoBehaviour
 
     private async void Start()
     {
-        // currencyService = new CurrencyService();
-        // balanceService = new BalanceService();
+        //currencyService = new CurrencyService();
+        //balanceService = new BalanceService();
 
-        currencyService = new MockCurrencyService(); 
-        balanceService = new MockBalanceService(); 
+        currencyService = new MockCurrencyService();
+        balanceService = new MockBalanceService();
 
         await LoadCurrencies();
     }
