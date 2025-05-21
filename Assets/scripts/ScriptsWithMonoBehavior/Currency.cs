@@ -14,6 +14,10 @@ public class Currency : MonoBehaviour
     public Transform canvas;
     public GameObject pref;
 
+    [SerializeField] private Sprite copperSprite;
+    [SerializeField] private Sprite goldSprite;
+    [SerializeField] private Sprite silverSprite;
+
     public Image Image;
     public Text textCurrencyValues;
 
@@ -86,7 +90,7 @@ public class Currency : MonoBehaviour
     {
         createdCurrencies.Clear();
         float positionOffsetX = 0.3f;
-
+        int count = 0;
         foreach (var currencyPair in currencyDictionary)
         {
             GameObject currencyObject = CopyPref(pref, canvas);
@@ -99,7 +103,21 @@ public class Currency : MonoBehaviour
             Image currencyImage = currencyObject.GetComponentInChildren<Image>();
             Text currencyText = currencyObject.GetComponentInChildren<Text>();
 
-            currencyImage.sprite = Resources.Load<Sprite>(currencyPair.Value.CurrencyType);
+            if (count == 0)
+            {
+                currencyImage.sprite = goldSprite;
+            }
+            else if (count == 1)
+            {
+                currencyImage.sprite = silverSprite;
+            }
+            else if (count == 2)
+            {
+                currencyImage.sprite = copperSprite;
+            }
+            else{ currencyImage.sprite = Resources.Load<Sprite>(currencyPair.Value.CurrencyType); }
+            count++;
+
             currencyText.text = currencyPair.Value.BalanceCurrency.ToString("F2");
 
             createdCurrencies[currencyPair.Key] = currencyObject;
