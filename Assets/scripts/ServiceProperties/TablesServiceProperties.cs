@@ -4,7 +4,7 @@ namespace Assets.scripts.ServiceProperties
 {
     public class TablesServiceProperties
     {
-        public readonly string baseUrl = "https://localhost:7075/api/";
+        public readonly string baseUrl = "http://localhost:5000/api/";
 
         public string Tables { get; set; }
         public int UserId { get; set; }
