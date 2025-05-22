@@ -8,11 +8,12 @@ public class AddedItemModel
     public int currency;
     public string image;
     public int place;
+    public string group;
     public int health;
     public int power;
     public int xPower;
 
-    public AddedItemModel(int id, int userId, string title, string description, int price, int currency, string image, int place, int health, int power, int xPower)
+    public AddedItemModel(int id, int userId, string title, string description, int price, int currency, string image, int place, string group, int health, int power, int xPower)
     {
         this.id = id;
         this.userId = userId;
@@ -22,6 +23,7 @@ public class AddedItemModel
         this.currency = currency;
         this.image = image;
         this.place = place;
+        this.group = group;
         this.health = health;
         this.power = power;
         this.xPower = xPower;

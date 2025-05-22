@@ -14,6 +14,10 @@ public class Currency : MonoBehaviour
     public Transform canvas;
     public GameObject pref;
 
+    [SerializeField] private Sprite copperSprite;
+    [SerializeField] private Sprite goldSprite;
+    [SerializeField] private Sprite silverSprite;
+
     public Image Image;
     public Text textCurrencyValues;
 
@@ -86,7 +90,7 @@ public class Currency : MonoBehaviour
     {
         createdCurrencies.Clear();
         float positionOffsetX = 0.3f;
-
+        int count = 0;
         foreach (var currencyPair in currencyDictionary)
         {
             GameObject currencyObject = CopyPref(pref, canvas);
@@ -99,7 +103,21 @@ public class Currency : MonoBehaviour
             Image currencyImage = currencyObject.GetComponentInChildren<Image>();
             Text currencyText = currencyObject.GetComponentInChildren<Text>();
 
-            currencyImage.sprite = Resources.Load<Sprite>(currencyPair.Value.CurrencyType);
+            if (count == 0)
+            {
+                currencyImage.sprite = goldSprite;
+            }
+            else if (count == 1)
+            {
+                currencyImage.sprite = silverSprite;
+            }
+            else if (count == 2)
+            {
+                currencyImage.sprite = copperSprite;
+            }
+            else{ currencyImage.sprite = Resources.Load<Sprite>(currencyPair.Value.CurrencyType); }
+            count++;
+
             currencyText.text = currencyPair.Value.BalanceCurrency.ToString("F2");
 
             createdCurrencies[currencyPair.Key] = currencyObject;
@@ -108,25 +126,50 @@ public class Currency : MonoBehaviour
 
     private void ReloadCurrency(int currency)
     {
-        if (createdCurrencies.TryGetValue(currency, out var currencyObject) && currencyDictionary.TryGetValue(currency, out var currencyData))
+        if (!createdCurrencies.TryGetValue(currency, out var currencyObject))
         {
-            Text currencyText = currencyObject.GetComponentInChildren<Text>();
-            currencyText.text = currencyData.BalanceCurrency.ToString("F2");
+            Debug.LogError($"ReloadCurrency: currencyObject с ключом {currency} не найден в createdCurrencies.");
+            return;
         }
+
+        if (!currencyDictionary.TryGetValue(currency, out var currencyData))
+        {
+            Debug.LogError($"ReloadCurrency: currencyData с ключом {currency} не найден в currencyDictionary.");
+            return;
+        }
+
+        Text currencyText = currencyObject.GetComponentInChildren<Text>();
+        if (currencyText == null)
+        {
+            Debug.LogError($"ReloadCurrency: Текстовый компонент не найден у currencyObject ({currencyObject.name}).");
+            return;
+        }
+
+        currencyText.text = currencyData.BalanceCurrency.ToString("F2");
+        Debug.Log($"ReloadCurrency: Баланс обновлён — {currencyText.text} для валюты {currency}");
     }
+
 
     public bool Purchase(int currency, double price)
     {
-        if (currencyDictionary.TryGetValue(currency, out var currencyData) && currencyData.BalanceCurrency >= price)
+        if (!currencyDictionary.TryGetValue(currency, out var currencyData))
         {
-            currencyData.BalanceCurrency -= price;
-            ReloadCurrency(currency);
-            return true;
+            Debug.LogWarning($"[Purchase] Currency with ID {currency} not found.");
+            return false;
         }
 
-        Debug.Log("Not enough funds for the purchase.");
-        return false;
+        if (currencyData.BalanceCurrency < price)
+        {
+            Debug.LogWarning($"[Purchase] Not enough funds: current = {currencyData.BalanceCurrency}, required = {price}");
+            return false;
+        }
+
+        currencyData.BalanceCurrency -= price;
+        ReloadCurrency(currency);
+        Debug.Log($"[Purchase] Purchase successful. New balance: {currencyData.BalanceCurrency}");
+        return true;
     }
+
 
     public bool Sale(int currency, double price)
     {

@@ -1,4 +1,4 @@
-using System.Collections;
+
 using UnityEngine;
 
 public class TowerPlase : MonoBehaviour
@@ -7,6 +7,7 @@ public class TowerPlase : MonoBehaviour
     public GameObject prefab;
     private GameObject firstInstanse;
     private GameObject secondInstanse;
+    private GameObject thirdInstanse;
 
     private static Vector2 CalculatePosition(Vector2 start, Vector2 end, float percentage)
     {
@@ -34,6 +35,7 @@ public class TowerPlase : MonoBehaviour
     {
         Vector2 firstPosition = CalculatePosition(startPosition, targetPosition, WaveConstants.firstlevel);
         Vector2 secondPosition = CalculatePosition(startPosition, targetPosition, WaveConstants.secondLevel);
+        Vector2 thirdPosition = CalculatePosition(startPosition, targetPosition, WaveConstants.thirdLevel);
 
         if (firstInstanse == null)
         {
@@ -43,6 +45,10 @@ public class TowerPlase : MonoBehaviour
         if (secondInstanse == null)
         {
             secondInstanse = SpawnPrefabOnCanvas(secondPosition);
+        }
+        if (thirdInstanse == null)
+        {
+            thirdInstanse = SpawnPrefabOnCanvas(thirdPosition);
         }
     }
 }

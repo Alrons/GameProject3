@@ -60,9 +60,25 @@ public class FireFromItem : MonoBehaviour
         TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
         foreach (CellNumberModel cellClass in tableCreator.hashSetCellNumber)
         {
-            if (cellClass.cellNumber == NumberCell)
+            if (cellClass.group == "Group 1" && cellClass.cellNumber == NumberCell)
             {
-                return cellClass.tableNumber;
+                return 1;
+            }
+            if (cellClass.group == "Group 2" && cellClass.cellNumber == NumberCell)
+            {
+                return 2;
+            }
+            if (cellClass.group == "Group 3" && cellClass.cellNumber == NumberCell)
+            {
+                return 3;
+            }
+            if (cellClass.group == "Group 4" && cellClass.cellNumber == NumberCell)
+            {
+                return 4;
+            }
+            if (cellClass.group == "Group 5" && cellClass.cellNumber == NumberCell)
+            {
+                return 5;
             }
         }
         return -1;
@@ -75,10 +91,11 @@ public class FireFromItem : MonoBehaviour
             int place = transform.GetComponent<DragDrop>().Place;
             switch (FindTableNumber(place))
             {
-                case 1: level = 4; break;
-                case 2: level = 3; break;
-                case 3: level = 2; break;
-                case 4: level = 1; break;
+                case 1: level = 5; break;
+                case 2: level = 4; break;
+                case 3: level = 3; break;
+                case 4: level = 2; break;
+                case 5: level = 1; break;
             }
         }
     }

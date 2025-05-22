@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.Collections;
 
 
 public class Refrash : MonoBehaviour
@@ -35,6 +36,8 @@ public class Refrash : MonoBehaviour
                 refrashCunvas = child;
             }
         }
+        
+        
 
     }
 
@@ -46,8 +49,9 @@ public class Refrash : MonoBehaviour
             PowerForLine powerForLine = txt.GetComponent<PowerForLine>();
             powerForLine.CulculateLine();
         }
+        
     }
-
+    
     private int FindTableNumber(int NumberCell)
     {
         TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
@@ -104,9 +108,13 @@ public class Refrash : MonoBehaviour
                         health.text = $"{spawnObject.addedItemsList[i].health}";
                         power.text = $"{spawnObject.addedItemsList[i].power}";
                         xPower.text = $"{spawnObject.addedItemsList[i].xPower}";
-                        GameObject _object = spawnObject.CopyPref(prefabObject, gameobj.transform.position,gameobj.transform);
+
+                        RectTransform rectTransform = gameobj.GetComponent<RectTransform>();
+                        Vector2 size = rectTransform.rect.size;
+
+                        GameObject _object = spawnObject.CopyPref(prefabObject, Vector3.zero , gameobj.transform, size);
                         DragDrop script = _object.GetComponent<DragDrop>();
-                        script.ThisAddedItem = true;
+                        script.IsAddedItem = true;
                         script.Id = spawnObject.addedItemsList[i].id;
                         script.Title = spawnObject.addedItemsList[i].title;
                         script.Description = spawnObject.addedItemsList[i].description;
@@ -114,6 +122,7 @@ public class Refrash : MonoBehaviour
                         script.Ñurrency = spawnObject.addedItemsList[i].currency;
                         script.Image = spawnObject.addedItemsList[i].image;
                         script.Place = spawnObject.addedItemsList[i].place;
+                        script.Group = spawnObject.addedItemsList[i].group;
                         script.Health = spawnObject.addedItemsList[i].health;
                         script.Power = spawnObject.addedItemsList[i].power;
                         script.XPower = spawnObject.addedItemsList[i].xPower;
@@ -130,8 +139,9 @@ public class Refrash : MonoBehaviour
 
             }
             
-            RefreshLinePower();
+            
         }
+        RefreshLinePower();
 
         return true;
     }
@@ -170,6 +180,7 @@ public class Refrash : MonoBehaviour
                     dragDrop.Ñurrency = spawnObject.allItems[count].currency;
                     dragDrop.Image = spawnObject.allItems[count].image;
                     dragDrop.Place = spawnObject.allItems[count].place;
+                    dragDrop.Group = spawnObject.allItems[count].group;
                     dragDrop.Health = spawnObject.allItems[count].health;
                     dragDrop.Power = spawnObject.allItems[count].power;
                     dragDrop.XPower = spawnObject.allItems[count].xPover;
@@ -177,8 +188,9 @@ public class Refrash : MonoBehaviour
                 count++;
             }
             
-            RefreshLinePower();
+            
         }
+        RefreshLinePower();
         return true;
     }
 }

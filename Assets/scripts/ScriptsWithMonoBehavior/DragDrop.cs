@@ -2,12 +2,12 @@
 using UnityEngine.UI;
 using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
-
     // Since the script is attached to 1 item, the parameters of each item are stored here
-    public bool ThisAddedItem { get; set; }
+    public bool IsAddedItem { get; set; }
     public int Id { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
@@ -15,14 +15,18 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
     public int Сurrency { get; set; }
     public string Image { get; set; }
     public int Place { get; set; }
+    public string Group { get; set; }
     public int Health { get; set; }
     public int Power { get; set; }
     public int XPower { get; set; }
+
 
     // get unity objects
     public GameObject dragObject; // item
     public ScrollRect scrollRect;
     public GameObject mainCamera;
+
+    public GameObject targetCell;
 
     DragDropProperties dragDropProperties = new DragDropProperties();
 
@@ -37,20 +41,21 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         //mainCamera = SciptSpawnObject.GetComponent<SpawnObject>();
         refrash = mainCamera.GetComponent<Refrash>();
         
+
         //for future
         //currency = coins.GetComponent<currency>();
 
     }
 
-    private void FormIsFull()
+    private bool FormIsFull(GameObject form)
     {
-        if (dragDropProperties.Form.transform.childCount > 0)
+        if (targetCell.transform.childCount > 0)
         {
-            dragDropProperties.FormIsFull = false;
+            return false;
         }
         else
         {
-            dragDropProperties.FormIsFull = true;
+            return true;
         }
     }
 
@@ -62,9 +67,9 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
             TableCreator tableCreator = mainCamera.GetComponent<TableCreator>();
             foreach (CellNumberModel cellClass in tableCreator.hashSetCellNumber)
             {
-                if (cellClass.cellNumber == Place)
+                if (!string.IsNullOrEmpty(cellClass?.group) && cellClass.group == Group)
                 {
-                    dragDropProperties.Form = cellClass.cell;
+                    dragDropProperties.Form.Add(cellClass);
                 }
             }
             dragDropProperties.DidTheFormSearchWork = true;
@@ -78,68 +83,100 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
 
     public void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.gameObject == dragDropProperties.Form)
+        if (dragDropProperties.Form != null)
         {
-            dragDropProperties.PosNow = true;
+            foreach (var cell in dragDropProperties.Form)
+            {
+                if (collision.gameObject == cell.cell)
+                {
+                    if (dragDropProperties.IsOnEndDrag == true) 
+                    {
+                        Place = cell.cellNumber;
+                    }
+                    targetCell = collision.gameObject;
+                    dragDropProperties.PosNow = true;
+                    break;
+                }
+            }
         }
     }
 
     public void OnTriggerExit2D(Collider2D collision)
     {
 
-        if (collision.gameObject == dragDropProperties.Form)
+        if (dragDropProperties.Form != null)
         {
-            dragDropProperties.PosNow = false;
+            foreach (var cell in dragDropProperties.Form)
+            {
+                if (collision.gameObject == cell.cell)
+                {
+                    dragDropProperties.PosNow = false;
+                    break;
+                }
+            }
         }
+        
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-
+        if (IsAddedItem) { return; }
         FindForm();
+        dragDropProperties.IsOnEndDrag = true;
         scrollRect.vertical = false;
         //image.raycastTarget = false;
         dragDropProperties.StartPos = dragObject.transform.position; // We take the coordinates of the initial position and remember
-        dragDropProperties.Form.GetComponent<Image>().color = new Color(255f, 255f, 255f, 0.6f);
+        foreach (var cell in dragDropProperties.Form)
+        {
+            cell.cell.GetComponent<Image>().color = new Color(255f, 255f, 255f, 0.6f);
+        }
+        
     }
 
     public void OnDrag(PointerEventData eventData) 
     {
+        if (IsAddedItem) { return; }
         dragDropProperties.RecetTransform = GetComponent<RectTransform>();
         dragDropProperties.RecetTransform.anchoredPosition += eventData.delta;
     }
      
-    private IEnumerator CantUseForm()
+    private IEnumerator CantUseForm(GameObject gameObject)
     {
 
-        dragDropProperties.Form.GetComponent<Image>().color = new Color(255f, 0f, 0f, 0.2f);
+        gameObject.GetComponent<Image>().color = new Color(255f, 0f, 0f, 0.2f);
         yield return new WaitForSeconds(1);
-        dragDropProperties.Form.GetComponent<Image>().color = new Color(255f, 255f, 255f, 0.1f);
+        gameObject.GetComponent<Image>().color = new Color(255f, 255f, 255f, 0.1f);
     }
 
     public async void OnEndDrag(PointerEventData eventData)
     {
-        FormIsFull();
+        if (IsAddedItem) { return; }
         scrollRect.vertical = true;
         bool Check = false;
         if (dragDropProperties.PosNow)
         {
-            if (dragDropProperties.FormIsFull)
+            if (FormIsFull(targetCell))
             {
                 if (mainCamera.GetComponent<Currency>().Purchase(this.Сurrency,Price))
                 {
                     ItemService itemService = new ItemService();
-                    bool check = await itemService.PostAddedItem(new AddedItemsRequest(1, Title, Description, Price, Сurrency, Image, Place, Health, Power, XPower));
+                    
+                    bool check = await itemService.PostAddedItem(new AddedItemsRequest(1, Title, Description, Price, Сurrency, Image, Place, Group, Health, Power, XPower));
                     Refreshing(check);
                     Destroy(dragObject);
                 }
                     
             }
         }
-        dragDropProperties.Form.GetComponent<Image>().color = new Color(255f, 255f, 255f, 0.1f);
+
+        foreach (var cell in dragDropProperties.Form)
+        {
+            cell.cell.GetComponent<Image>().color = new Color(255f, 255f, 255f, 0.2f);
+        }
+
         if (Check)
         {
-            StartCoroutine(CantUseForm());
+            StartCoroutine(CantUseForm(targetCell));
         }
         this.transform.position = dragDropProperties.StartPos; 
     }

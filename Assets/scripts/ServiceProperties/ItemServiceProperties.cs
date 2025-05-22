@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class ItemServiceProperties
 {
-    public readonly string baseUrl = "https://localhost:7075/api/";
+    public readonly string baseUrl = "http://localhost:5000/api/";
 
     public string AddedItems { get; set; }
     public string Items { get; set; }

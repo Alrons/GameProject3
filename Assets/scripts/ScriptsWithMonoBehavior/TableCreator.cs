@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.scripts.Interface.Models;
 
 public class TableCreator : MonoBehaviour
 {
     public Transform canvas;
     public Transform cellBackgroundTransform;
     public Transform cellContentTransform;
+    public Transform tableContainer;
     public Text ourLinePower;
-    private RectTransform rectTransfrom;
 
     private int totalTableCount;
     private int totalCellCount;
@@ -18,67 +19,94 @@ public class TableCreator : MonoBehaviour
     public List<Text> textsLinePower = new List<Text>();
     public HashSet<CellNumberModel> hashSetCellNumber = new HashSet<CellNumberModel>();
 
-    private int cellSpacing = 80; // distance between the cells
-
-    public void CreateTable(int width, int height, Vector3 Position, double Rotate)
+    public void CreateTable(TableDto tableDto)
     {
         totalTableCount += 1;
+        
+        GameObject table = Instantiate(tableContainer.gameObject, canvas);
+        table.transform.localScale = Vector3.one;
 
-        // Creating a table background
-        GameObject gameObject = CopyPref(cellBackgroundTransform.gameObject);
-        gameObject.transform.SetParent(canvas);
-        gameObject.transform.position = Position;
 
-        // Creating a table
+        table.transform.localPosition = new Vector3((float)tableDto.PosX, (float)tableDto.PosY);
+        table.transform.localRotation = Quaternion.Euler(0, 0, (float)tableDto.Rotate);
 
-        for (int i = 0; i < height; i++)
+        RectTransform tableRect = table.GetComponent<RectTransform>();
+
+        GridLayoutGroup grid = table.GetComponent<GridLayoutGroup>();
+        ContentSizeFitter fitter = table.GetComponent<ContentSizeFitter>();
+
+        grid.cellSize = new Vector2(tableDto.CellSize.Width, tableDto.CellSize.Height);
+        grid.spacing = new Vector2(tableDto.CellSpacing.Horizontal, tableDto.CellSpacing.Vertical);
+        grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        grid.constraintCount = tableDto.Width + 1;
+        
+        fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        
+        int indexCell = 0;
+        for (int i = 0; i < tableDto.Height; i++)
         {
             int startNumberCell = hashSetCellNumber.Count;
 
-            for (int j = 0; j < width; j++)
+            for (int j = 0; j < tableDto.Width; j++)
             {
                 totalCellCount += 1;
 
-                // copy of the cell
-                GameObject cellBackground = CopyPref(cellContentTransform.gameObject);
-                
-                // save cell
-                hashSetCellNumber.Add(new CellNumberModel(cellBackground, totalCellCount, totalTableCount));
+                GameObject cell = CopyPref(cellContentTransform.gameObject, tableDto.CellSize.Width, tableDto.CellSize.Height);
+                cell.transform.SetParent(table.transform, false);
+                cell.transform.localScale = Vector3.one;
 
-                cellBackground.transform.localScale = new Vector3(1, 1, 1); // change cell size
-                cellBackground.transform.SetParent(gameObject.transform);
+                hashSetCellNumber.Add(new CellNumberModel(cell, totalCellCount, totalTableCount, tableDto.Cells[indexCell].Group, tableDto.CellSize));
 
-                cellBackground.transform.position = gameObject.transform.position + new Vector3(j * (100 + cellSpacing), -i * (30 + cellSpacing), 0); // changing position of the cell
-
-
-                if (j == (width - 1))
+                if (j == tableDto.Width - 1)
                 {
                     Text lineText = Instantiate(ourLinePower);
-                    lineText.transform.SetParent(gameObject.transform);
-                    lineText.transform.position = gameObject.transform.position + new Vector3((j + 1) * (100 + cellSpacing), -i * (30 + cellSpacing), 0);
-
+                    lineText.transform.SetParent(table.transform, false);
+                    lineText.transform.localScale = Vector3.one;
                     PowerForLine powerForLine = lineText.GetComponent<PowerForLine>();
                     powerForLine.StartNumberCell = startNumberCell;
-                    powerForLine.EndNumberCell = startNumberCell + width;
+                    
+                    powerForLine.EndNumberCell = startNumberCell + tableDto.Width;
                     textsLinePower.Add(lineText);
                 }
+                cell.transform.localScale = Vector3.one;
+                indexCell++;
             }
         }
-
-        gameObject.transform.localScale = new Vector3(1, 1, 1);
-        rectTransfrom = gameObject.GetComponent<RectTransform>();
-        rectTransfrom.sizeDelta = new Vector2(((width - 1) * 200) + 150, ((height - 1) * 130) + 50);
-        gameObject.transform.Rotate(0, 0, (float)Rotate);
-
-        
+        textsLinePower.RemoveAll(text => text == null);
     }
 
     //For copy
-    public GameObject CopyPref(GameObject box)
+    public GameObject CopyPref(GameObject box, float targetWidth, float targetHeight)
     {
         var spawn = Instantiate(box);
-        spawn.transform.localScale = new Vector3(1, 1, 1);
-        return spawn;
+        spawn.transform.localScale = Vector3.one;
 
+        PolygonCollider2D poly = spawn.GetComponent<PolygonCollider2D>();
+        RectTransform rect = spawn.GetComponent<RectTransform>();
+
+        if (poly != null && rect != null)
+        {
+            Vector2[] originalPoints = poly.points;
+
+            Bounds originalBounds = poly.bounds;
+            float originalWidth = originalBounds.size.x;
+            float originalHeight = originalBounds.size.y;
+
+            float scaleX = targetWidth / originalWidth;
+            float scaleY = targetHeight / originalHeight;
+
+            Vector2[] scaledPoints = new Vector2[originalPoints.Length];
+            for (int i = 0; i < originalPoints.Length; i++)
+            {
+                scaledPoints[i] = new Vector2(
+                    originalPoints[i].x * scaleX,
+                    originalPoints[i].y * scaleY
+                );
+            }
+
+            poly.points = scaledPoints;
+        }
+
+        return spawn;
     }
 }

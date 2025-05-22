@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 public class WavesServiceProperties
 {
-    public readonly string baseUrl = "https://localhost:7075/api/";
+    public readonly string baseUrl = "http://localhost:5000/api/";
     public string Wave { get; set; }
     public string StartWavePos { get; set; }
     public string ApiKey { get; set; }

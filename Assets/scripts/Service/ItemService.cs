@@ -1,8 +1,5 @@
 using Newtonsoft.Json;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -34,12 +31,6 @@ public class ItemService : IItemService
     {
         string url = $"{_itemServiceProperties.baseUrl}{_itemServiceProperties.Items}{_itemServiceProperties.UserId}";
         return await SendGetRequest<List<ItemModel>>(url);
-    }
-
-    public async Task<List<TableDataModel>> GetOurTables()
-    {
-        string url = $"{_itemServiceProperties.baseUrl}{_itemServiceProperties.Tables}";
-        return await SendGetRequest<List<TableDataModel>>(url);
     }
 
     public async Task<bool> PostAddedItem(AddedItemsRequest model)
